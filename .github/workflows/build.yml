@@ -22,12 +22,12 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      # 编译所有模块的 debug 包，方便测试
-      run: ./gradlew assembleDebug
+      # 编译所有模块的 release 包，包更小，运行速度更快
+      run: ./gradlew :app:assembleRelease
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: TVBox-APK
         # 把根目录下所有模块生成的 APK 都打包上来
-        path: '**/build/outputs/apk/debug/*.apk'
+        path: 'app/build/outputs/apk/release/*.apk'
