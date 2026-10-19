@@ -7,8 +7,12 @@ android {
         applicationId 'com.steven.stvbox' 
         targetSdkVersion 28
         minSdkVersion 21 // 兼容安卓 5.1
-        versionCode 1     // ⚠️ 以后每次更新发版，把这个数字改成 2, 3, 4...
-        versionName '1.0.0' // ⚠️ 对应的名字改成 1.0.1, 1.0.2...
+        
+        // 【全自动版本号】读取 GitHub 的构建序号，每次打包自动+1
+        def buildNumber = System.getenv("GITHUB_RUN_NUMBER") ?: "1"
+        versionCode buildNumber.toInteger() // 自动变为 1, 2, 3...
+        versionName "1.0.${buildNumber}"    // 自动变为 1.0.1, 1.0.2...
+        
         multiDexEnabled true
 
         // 只保留 32 位（armeabi-v7a），完美适配老电视盒子
@@ -37,7 +41,7 @@ android {
     // 【核心点】配置固定签名，确保以后的包都能覆盖安装
     signingConfigs {
         release {
-            // 【已修改】使用我们在 GitHub Actions 中现场生成的签名文件
+            // 使用我们在 GitHub Actions 中现场生成的签名文件
             storeFile file("release.keystore")
             storePassword '123456'
             keyAlias 'stvbox'
@@ -64,7 +68,7 @@ android {
 
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach { output ->
-            // 生成的包名
+            // 生成的包名，会随着构建次数自动变化，例如 STVBox_v1.0.12_java32_release.apk
             def fileName = "STVBox_v${variant.versionName}_java32_${variant.buildType.name}.apk"
             outputFileName = fileName
         }
