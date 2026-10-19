@@ -21,17 +21,19 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # 【新增这一行】云端伪造 local.properties，骗过强制读取 SDK 的模块
     - name: Create local.properties
       run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
+    # 【新增神技】在云端现场生成一个专属的 keystore 签名文件
+    - name: Generate Keystore
+      run: |
+        keytool -genkeypair -v -keystore app/release.keystore -alias stvbox -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=STVBox, OU=Dev, O=Dev, L=SZ, ST=SZ, C=CN"
+
     - name: Build with Gradle
-      # 只编译 app 模块的 release 包
       run: ./gradlew :app:assembleRelease
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: TVBox-APK
-        # 只抓取 app 模块的 apk
         path: 'app/build/outputs/apk/release/*.apk'
