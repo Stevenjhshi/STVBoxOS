@@ -1,7 +1,10 @@
 name: Build APK
 
 on:
-  workflow_dispatch: # 只允许手动点击
+  workflow_dispatch: 
+
+permissions:
+  contents: write 
 
 jobs:
   build:
@@ -10,6 +13,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -31,17 +36,62 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew :app:assembleRelease
 
+    - name: Read Version
+      id: ver
+      run: |
+        # 稳稳提取纯数字版本号，单引号双引号全都兼容
+        VERSION=$(grep "versionName" app/build.gradle | head -1 | awk -F "'" '{print $2}')
+        if [ -z "$VERSION" ]; then
+          VERSION=$(grep "versionName" app/build.gradle | head -1 | awk -F '"' '{print $2}')
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: STVBox-APK
+        name: STVBox-v${{ env.VERSION }}
         path: app/build/outputs/apk/release/*.apk
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: build-${{ github.run_number }}
-        name: STVBox Build ${{ github.run_number }}
+        tag_name: v${{ env.VERSION }}
+        name: STVBox v${{ env.VERSION }}
         files: app/build/outputs/apk/release/*.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # ==========================================
+    # 👇 超级自动化：打包成功后，修改版本号并自动提交
+    # ==========================================
+    
+    # 1. 打包完把这个临时签名删掉，防止干扰 Git 提交
+    - name: Delete keystore
+      run: rm -f app/release.keystore
+
+    # 2. 自动修改版本号 +1
+    - name: Auto Bump Version
+      run: |
+        OLD_NAME=$(grep "versionName" app/build.gradle | head -1 | awk -F "'" '{print $2}')
+        if [ -z "$OLD_NAME" ]; then
+          OLD_NAME=$(grep "versionName" app/build.gradle | head -1 | awk -F '"' '{print $2}')
+        fi
+        OLD_CODE=$(grep "versionCode" app/build.gradle | head -1 | grep -oE "[0-9]+")
+        
+        MAJOR=$(echo $OLD_NAME | cut -d. -f1)
+        MINOR=$(echo $OLD_NAME | cut -d. -f2)
+        PATCH=$(echo $OLD_NAME | cut -d. -f3)
+        NEW_PATCH=$((PATCH + 1))
+        NEW_NAME="$MAJOR.$MINOR.$NEW_PATCH"
+        NEW_CODE=$((OLD_CODE + 1))
+        
+        sed -i "s/versionCode $OLD_CODE/versionCode $NEW_CODE/g" app/build.gradle
+        sed -i "s/versionName '$OLD_NAME'/versionName '$NEW_NAME'/g" app/build.gradle
+        sed -i "s/versionName \"$OLD_NAME\"/versionName \"$NEW_NAME\"/g" app/build.gradle
+
+    # 3. 使用官方认证的自动提交插件（绝对不会报错）
+    - name: Commit and Push
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Auto bump version [skip ci]"
+        file_pattern: app/build.gradle
