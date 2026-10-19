@@ -21,13 +21,17 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    # 【新增这一行】云端伪造 local.properties，骗过强制读取 SDK 的模块
+    - name: Create local.properties
+      run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
     - name: Build with Gradle
-      # 编译所有模块的 release 包，包更小，运行速度更快
+      # 只编译 app 模块的 release 包
       run: ./gradlew :app:assembleRelease
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: TVBox-APK
-        # 把根目录下所有模块生成的 APK 都打包上来
+        # 只抓取 app 模块的 apk
         path: 'app/build/outputs/apk/release/*.apk'
