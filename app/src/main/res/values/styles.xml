@@ -11,13 +11,20 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>//全屏即无通知栏
-        <item name="android:windowContentOverlay">@null</item>//是否有遮盖
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
         <item name="windowNoTitle">true</item>
         <item name="android:keepScreenOn">true</item>
-        <!--        <item name="android:windowBackground">@drawable/main_bg</item>-->
-        <item name="android:windowBackground">@android:color/transparent</item>
+        
+        <!-- 【修改1】将原来的透明背景改成纯黑，完美解决“所有界面纯黑”需求 -->
+        <item name="android:windowBackground">#000000</item>
     </style>
+
+    <!-- 【新增2】专门用来显示你的启动图，进 App 前会先走这个主题 -->
+    <style name="SplashTheme" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+
     <!-- 自定义dialog样式 -->
     <style name="CustomDialogStyle" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
