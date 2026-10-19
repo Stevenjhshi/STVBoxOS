@@ -38,6 +38,10 @@
     <color name="color_000000_60">#99000000</color>
     <color name="color_scrollview_bg">#000000</color>
     <color name="color_text_primary">#FFFFFAE0</color>
+
+    <!-- 补上了这个缺失的颜色定义，设为纯黑 -->
+    <color name="color_dialog_bg">#000000</color> 
+
     <color name="dialog_panel_bg">#000000</color> 
     <color name="dialog_panel_stroke">#33FFFFFF</color>
     <color name="dialog_control_bg">#80353535</color>
