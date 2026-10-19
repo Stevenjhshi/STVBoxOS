@@ -8,9 +8,15 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +24,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +76,6 @@ import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -105,6 +113,12 @@ public class HomeActivity extends BaseActivity {
     private final Handler mHandler = new Handler();
     private long mExitTime = 0;
     private boolean eventBusRegistered = false;
+
+    // ================= 【新增：自定义启动遮罩层相关】 =================
+    private View mySplashOverlay = null;
+    private boolean isOverlayHidden = false;
+    // ===============================================================
+
     private final Runnable mRunnable = new Runnable() {
         @SuppressLint("SetTextI18n")
         @Override
@@ -127,8 +141,6 @@ public class HomeActivity extends BaseActivity {
             if (topLayout == null || isActivityUnavailable() || currentSelected != 0 || topHide != 0) {
                 return;
             }
-            // OnePlus devices may finish applying immersive mode after the first measure.
-            // Re-apply the visible top state once the final display metrics are available.
             hideSysBar();
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topLayout.getLayoutParams();
             params.topMargin = AutoSizeUtils.mm2px(HomeActivity.this, 10.0f);
@@ -169,12 +181,24 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
+        // ================= 【强行把底层窗口刷成纯黑，干掉蓝色底图】 =================
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
         this.topLayout = findViewById(R.id.topLayout);
         this.tvDate = findViewById(R.id.tvDate);
         this.tvName = findViewById(R.id.tvName);
         this.contentLayout = findViewById(R.id.contentLayout);
         this.mGridView = findViewById(R.id.mGridView);
         this.mViewPager = findViewById(R.id.mViewPager);
+
+        // ================= 【强行把内容容器刷成纯黑】 =================
+        if (this.contentLayout != null) {
+            this.contentLayout.setBackgroundColor(Color.BLACK);
+        }
+
+        // ================= 【动态创建启动遮罩层】 =================
+        initSplashOverlay();
+
         this.sortAdapter = new SortAdapter();
         this.mGridView.setLayoutManager(new V7LinearLayoutManager(this.mContext, 0, false));
         this.mGridView.setSpacingWithMargins(0, AutoSizeUtils.dp2px(this.mContext, 10.0f));
@@ -241,7 +265,7 @@ public class HomeActivity extends BaseActivity {
             public void onItemClick(TvRecyclerView parent, View itemView, int position) {
                 if (itemView != null && currentSelected == position) {
                     BaseLazyFragment baseLazyFragment = fragments.get(currentSelected);
-                    if ((baseLazyFragment instanceof GridFragment) && !sortAdapter.getItem(position).filters.isEmpty()) {// 弹出筛选
+                    if ((baseLazyFragment instanceof GridFragment) && !sortAdapter.getItem(position).filters.isEmpty()) {
                         ((GridFragment) baseLazyFragment).showFilter();
                     } else if (baseLazyFragment instanceof UserFragment) {
                         showSiteSwitch();
@@ -311,9 +335,68 @@ public class HomeActivity extends BaseActivity {
             }
         });
         setLoadSir(this.contentLayout);
-        //mHandler.postDelayed(mFindFocus, 500);
     }
 
+    // ================= 【核心方法：动态构建你的科技蓝加载遮罩层】 =================
+    private void initSplashOverlay() {
+        if (mySplashOverlay != null) return;
+        isOverlayHidden = false;
+
+        FrameLayout overlay = new FrameLayout(this);
+        overlay.setBackgroundColor(Color.BLACK);
+
+        // 1. 背景图（你的启动图）
+        ImageView bg = new ImageView(this);
+        bg.setImageResource(R.drawable.splash_bg);
+        bg.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        overlay.addView(bg, new FrameLayout.LayoutParams(-1, -1));
+
+        // 2. 科技蓝细线条滚动效果
+        ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        pb.setIndeterminate(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            pb.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor("#1890FF"))); // 科技蓝
+        }
+        FrameLayout.LayoutParams pbLp = new FrameLayout.LayoutParams(AutoSizeUtils.mm2px(this, 350), AutoSizeUtils.mm2px(this, 4));
+        pbLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        pbLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
+        overlay.addView(pb, pbLp);
+
+        // 3. 数据加载中提示
+        TextView tvLoad = new TextView(this);
+        tvLoad.setText("数据加载中...");
+        tvLoad.setTextColor(Color.parseColor("#1890FF"));
+        tvLoad.setTextSize(18);
+        FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
+        tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 110);
+        overlay.addView(tvLoad, tvLp);
+
+        // 强行盖在最顶层
+        getWindow().addContentView(overlay, new ViewGroup.LayoutParams(-1, -1));
+        mySplashOverlay = overlay;
+
+        // 安全防卡死机制：最长显示 15 秒，15 秒后就算源没加载出来也强行消失
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            hideSplashOverlay();
+        }, 15000);
+    }
+
+    // ================= 【核心方法：数据加载成功后，让遮罩层淡出消失】 =================
+    private void hideSplashOverlay() {
+        if (isOverlayHidden || mySplashOverlay == null) return;
+        isOverlayHidden = true;
+        mySplashOverlay.animate()
+                .alpha(0f)
+                .setDuration(600)
+                .withEndAction(() -> {
+                    if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
+                        ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
+                    }
+                    mySplashOverlay = null;
+                }).start();
+    }
+    // ====================================================================
 
     private boolean skipNextUpdate = false;
 
@@ -350,10 +433,14 @@ public class HomeActivity extends BaseActivity {
                 loadingSourceKey = null;
                 previousHomeName = null;
                 previousHomeSource = null;
+
+                // ================= 【触发点：源终于加载完了，让遮罩层消失】 =================
+                hideSplashOverlay();
             }
         });
     }
 
+    // ... 下面的代码全部保持你原来的样子，不用动 ...
     private boolean dataInitOk = false;
     private boolean jarInitOk = false;
     private boolean searchSpiderWarmStarted = false;
@@ -370,7 +457,6 @@ public class HomeActivity extends BaseActivity {
             if (!useCacheConfig && Hawk.get(HawkConfig.DEFAULT_LOAD_LIVE, false)) {
                 jumpActivity(LivePlayActivity.class);
             }
-            //爬虫预热 仅首次加载
             if(!useCacheConfig)warmSearchSpidersOnce();
             return;
         }
@@ -385,7 +471,6 @@ public class HomeActivity extends BaseActivity {
                         mHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-//                                if (!useCacheConfig) Toast.makeText(HomeActivity.this, "自定义jar加载成功", Toast.LENGTH_SHORT).show();
                                 initData();
                             }
                         }, 50);
@@ -461,6 +546,9 @@ public class HomeActivity extends BaseActivity {
                         if (isActivityUnavailable()) {
                             return;
                         }
+                        // 如果配置加载报错，直接让遮罩层消失，避免卡死
+                        hideSplashOverlay();
+
                         if (mConfigErrorDialog == null)
                             mConfigErrorDialog = new TipDialog(HomeActivity.this, msg, "重试", "取消", new TipDialog.OnListener() {
                                 @Override
@@ -607,7 +695,6 @@ public class HomeActivity extends BaseActivity {
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBackPressed() {
-        // 打断加载
         if (homeSortLoading) {
             cancelHomeSortLoading();
             return;
@@ -616,14 +703,12 @@ public class HomeActivity extends BaseActivity {
             refreshEmpty();
             return;
         }
-        // 如果处于 VOD 删除模式，则退出该模式并刷新界面
         if (HawkConfig.hotVodDelete) {
             HawkConfig.hotVodDelete = false;
             UserFragment.homeHotVodAdapter.notifyDataSetChanged();
             return;
         }
 
-        // 检查 fragments 状态
         if (this.fragments.size() <= 0 || this.sortFocused >= this.fragments.size() || this.sortFocused < 0) {
             doExit();
             return;
@@ -632,22 +717,17 @@ public class HomeActivity extends BaseActivity {
         BaseLazyFragment baseLazyFragment = this.fragments.get(this.sortFocused);
         if (baseLazyFragment instanceof GridFragment) {
             GridFragment grid = (GridFragment) baseLazyFragment;
-            // 如果当前 Fragment 能恢复之前保存的 UI 状态，则直接返回
             if (grid.restoreView()) {
                 return;
             }
-            // 如果 sortFocusView 存在且没有获取焦点，则请求焦点
             if (this.sortFocusView != null && !this.sortFocusView.isFocused()) {
                 this.sortFocusView.requestFocus();
-            }
-            // 如果当前不是第一个界面，则将列表设置到第一项
-            else if (this.sortFocused != 0) {
+            } else if (this.sortFocused != 0) {
                 this.mGridView.setSelection(0);
             } else {
                 doExit();
             }
         } else if (baseLazyFragment instanceof UserFragment && UserFragment.tvHotList.canScrollVertically(-1)) {
-            // 如果 UserFragment 列表可以向上滚动，则滚动到顶部
             UserFragment.tvHotList.scrollToPosition(0);
             this.mGridView.setSelection(0);
         } else {
@@ -656,7 +736,6 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void doExit() {
-        // 如果两次返回间隔小于 2000 毫秒，则退出应用
         if (System.currentTimeMillis() - mExitTime < 2000) {
             AppManager.getInstance().finishAllActivity();
             unregisterEventBus();
@@ -665,7 +744,6 @@ public class HomeActivity extends BaseActivity {
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         } else {
-            // 否则仅提示用户，再按一次退出应用
             mExitTime = System.currentTimeMillis();
             Toast.makeText(mContext, "再按一次返回键退出应用", Toast.LENGTH_SHORT).show();
         }
@@ -745,7 +823,7 @@ public class HomeActivity extends BaseActivity {
     };
 
     private long menuKeyDownTime = 0;
-    private static final long LONG_PRESS_THRESHOLD = 2000; // 设置长按的阈值，单位是毫秒
+    private static final long LONG_PRESS_THRESHOLD = 2000; 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (topHide < 0)
@@ -773,9 +851,7 @@ public class HomeActivity extends BaseActivity {
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
+            public void onAnimationStart(Animator animation) {}
 
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -783,14 +859,10 @@ public class HomeActivity extends BaseActivity {
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
+            public void onAnimationCancel(Animator animation) {}
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
+            public void onAnimationRepeat(Animator animation) {}
         });
         if (hide && topHide == 0) {
             animatorSet.playTogether(ObjectAnimator.ofObject(viewObj, "marginTop", new IntEvaluator(),
@@ -846,11 +918,9 @@ public class HomeActivity extends BaseActivity {
         if (mSiteSwitchDialog == null) {
             mSiteSwitchDialog = new SelectDialog<>(HomeActivity.this);
             TvRecyclerView tvRecyclerView = mSiteSwitchDialog.findViewById(R.id.list);
-            // 根据 sites 数量动态计算列数
             int spanCount = (int) Math.floor(sites.size() / 20.0);
             spanCount = Math.min(spanCount, 2);
             tvRecyclerView.setLayoutManager(new V7GridLayoutManager(mSiteSwitchDialog.getContext(), spanCount + 1));
-            // 设置对话框宽度
             ConstraintLayout cl_root = mSiteSwitchDialog.findViewById(R.id.cl_root);
             ViewGroup.LayoutParams clp = cl_root.getLayoutParams();
             clp.width = AutoSizeUtils.mm2px(mSiteSwitchDialog.getContext(), 380 + 200 * spanCount);
@@ -882,8 +952,7 @@ public class HomeActivity extends BaseActivity {
             mSiteSwitchDialog.show();
     }
 
-    private void refreshHome()
-    {
+    private void refreshHome() {
         refreshHome(true);
     }
 
@@ -907,8 +976,7 @@ public class HomeActivity extends BaseActivity {
         UserFragment.homeHotVodAdapter.setNewData(absXml.videoList);
     }
 
-    private void refreshHome(final boolean restart)
-    {
+    private void refreshHome(final boolean restart) {
         if (Thread.currentThread() != android.os.Looper.getMainLooper().getThread()) {
             mHandler.post(new Runnable() {
                 @Override
@@ -935,7 +1003,7 @@ public class HomeActivity extends BaseActivity {
     }
 
     private boolean isActivityUnavailable() {
-        return isFinishing() || (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed());
+        return isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed());
     }
 
     private void dismissHomeDialogs() {
@@ -961,8 +1029,7 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
-    private void refreshEmpty()
-    {
+    private void refreshEmpty() {
         skipNextUpdate=true;
         showSuccess();
         cancelHomeSortLoading();
@@ -986,8 +1053,7 @@ public class HomeActivity extends BaseActivity {
         previousHomeName = null;
     }
 
-    private void tvNameAnimation()
-    {
+    private void tvNameAnimation() {
         tvName.clearAnimation();
         AlphaAnimation blinkAnimation = new AlphaAnimation(0.0f, 1.0f);
         blinkAnimation.setDuration(500);
