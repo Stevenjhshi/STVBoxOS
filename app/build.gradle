@@ -4,7 +4,7 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        applicationId 'com.github.tvbox.osc.jun' 
+        applicationId 'com.steven.stvbox' 
         targetSdkVersion 28
         minSdkVersion 21 // 兼容安卓 5.1
         versionCode 1     // ⚠️ 以后每次更新发版，把这个数字改成 2, 3, 4...
