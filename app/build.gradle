@@ -8,9 +8,12 @@ android {
         targetSdkVersion 28
         minSdkVersion 21 // 兼容安卓 5.1
         
-        // 【已修复】恢复最纯净的版本号，交由脚本自动接管 +1
-        versionCode 3
-        versionName '1.0.2'
+        // 【神仙逻辑】优先读取 GitHub Actions 传入的版本号，如果没有（比如本地编译），就用默认的
+        def appVerName = project.hasProperty("versionName") ? project.property("versionName") : "1.0.0"
+        def appVerCode = project.hasProperty("versionCode") ? project.property("versionCode") : "1"
+        
+        versionName appVerName
+        versionCode appVerCode.toInteger()
         
         multiDexEnabled true
 
@@ -37,7 +40,7 @@ android {
         }
     }
 
-    // 【核心点】配置固定签名，确保以后的包都能覆盖安装
+    // 配置固定签名，确保以后的包都能覆盖安装
     signingConfigs {
         release {
             storeFile file("release.keystore")
