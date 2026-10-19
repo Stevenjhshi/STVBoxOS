@@ -4,12 +4,18 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        applicationId 'com.github.tvbox.osc.jun'
+        applicationId 'com.github.tvbox.osc.jun' 
         targetSdkVersion 28
-        versionCode 1
-        versionName '1.0.0'
+        minSdkVersion 21 // 兼容安卓 5.1
+        versionCode 1     // ⚠️ 以后每次更新发版，把这个数字改成 2, 3, 4...
+        versionName '1.0.0' // ⚠️ 对应的名字改成 1.0.1, 1.0.2...
         multiDexEnabled true
-        //设置room的Schema的位置
+
+        // 只保留 32 位（armeabi-v7a），完美适配老电视盒子
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+        
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -22,101 +28,44 @@ android {
         exclude 'META-INF/beans.xml'
     }
 
-    flavorDimensions "mode"
-    productFlavors {
-        java {
-            dimension "mode"
-            minSdkVersion 19
-            ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters 'armeabi-v7a', 'arm64-v8a'
-            }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        java32 {
-            dimension "mode"
-            minSdkVersion 19
-            ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters 'armeabi-v7a'
-            }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        java64 {
-            dimension "mode"
-            minSdkVersion 21
-            ndk {
-                abiFilters 'arm64-v8a'
-            }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        python {
-            dimension "mode"
-            minSdkVersion 19
-            ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters 'armeabi-v7a', 'arm64-v8a'
-            }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-python.pro'
-        }
-        python32 {
-            dimension "mode"
-            minSdkVersion 19
-            ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters 'armeabi-v7a'
-            }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-python.pro'
-        }
-        python64 {
-            dimension "mode"
-            minSdkVersion 21
-            ndk {
-                abiFilters 'arm64-v8a'
-            }
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-python.pro'
+    sourceSets {
+        main {
+            java.srcDirs += 'src/normal/java'
         }
     }
 
-    sourceSets {
-        java {
-            java.srcDirs += 'src/normal/java'
-        }
-        java32 {
-            java.srcDirs += 'src/normal/java'
-        }
-        java64 {
-            java.srcDirs += 'src/normal/java'
-        }
-        python32 {
-            java.srcDirs += 'src/python/java'
-        }
-        python64 {
-            java.srcDirs += 'src/python/java'
+    // 【核心点】配置固定签名，确保以后的包都能覆盖安装
+    signingConfigs {
+        release {
+            // 借用云端构建环境自带的固定 debug 签名
+            storeFile file("${System.properties['user.home']}/.android/debug.keystore")
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-        }
         release {
+            // 开启代码混淆和资源压缩（让包更小、运行更快）
             minifyEnabled true
+            shrinkResources true
+            // 强制使用上面写死的固定签名
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    // 禁用 ABI 分割
     splits {
         abi {
-            enable false // 禁用 ABI 分割
+            enable false 
         }
     }
 
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach { output ->
-            def flavorNames = variant.productFlavors.collect { it.name }.join('-')
-            // 构建自定义文件名
-            def fileName = "TVBox_${variant.buildType.name}-${flavorNames}.apk"
+            // 生成的包名
+            def fileName = "STVBox_v${variant.versionName}_java32_${variant.buildType.name}.apk"
             outputFileName = fileName
         }
     }
@@ -130,17 +79,12 @@ android {
         checkReleaseBuilds false
         abortOnError false
     }
-//    dexOptions {
-//        javaMaxHeapSize "4g"
-//        additionalParameters += '--multi-dex'
-//        additionalParameters += '--set-max-idx-number=48000'
-//        additionalParameters += '--minimal-main-dex'
-//    }
 }
 
 repositories {
 
 }
+
 dependencies {
     api fileTree(dir: "libs", include: ["*.jar","*.aar"])
 
@@ -157,9 +101,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-//    implementation files('libs/thunder.jar')
-//    implementation files('libs/commons-lang3-3.12.0.jar')
-
 
     implementation 'com.squareup.okhttp3:okhttp:3.12.11'
     annotationProcessor 'androidx.room:room-compiler:2.3.0'
@@ -182,13 +123,8 @@ dependencies {
 
     implementation project(":player")
     implementation project(":quickjs")
-    pythonImplementation project(":pyramid")
-    python32Implementation project(":pyramid")
-    python64Implementation project(":pyramid")
-
 
     implementation 'com.lzy.net:okgo:3.0.4'
-    // implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     implementation 'com.owen:tv-recyclerview:3.0.0'
 
     implementation 'com.github.getActivity:XXPermissions:13.6'
@@ -196,10 +132,7 @@ dependencies {
     implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
-    //支持http3
     implementation ('com.google.net.cronet:cronet-okhttp:0.1.0')
-//    implementation 'com.google.android.gms:play-services-cronet:18.0.1'
     implementation ('org.chromium.net:cronet-embedded:101.4951.41')
     implementation 'org.brotli:dec:0.1.2'
 }
-
