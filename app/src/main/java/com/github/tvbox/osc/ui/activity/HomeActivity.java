@@ -343,6 +343,26 @@ public class HomeActivity extends BaseActivity {
         bg.setScaleType(ImageView.ScaleType.CENTER_CROP);
         overlay.addView(bg, new FrameLayout.LayoutParams(-1, -1));
 
+        // ================= 【纯代码特效】 =================
+        // 特效A：一开始从完全透明，用 800 毫秒平滑浮现出来
+        bg.setAlpha(0f);
+        bg.animate().alpha(1f).setDuration(800).start();
+
+        // 特效B：持续“呼吸缩放”，放大 1.08 倍再缩回，无限循环
+        android.animation.ObjectAnimator scaleX = android.animation.ObjectAnimator.ofFloat(bg, "scaleX", 1.0f, 1.08f);
+        android.animation.ObjectAnimator scaleY = android.animation.ObjectAnimator.ofFloat(bg, "scaleY", 1.0f, 1.08f);
+        
+        scaleX.setDuration(2500); // 2.5秒完成一次放大
+        scaleY.setDuration(2500);
+        scaleX.setRepeatCount(android.animation.ValueAnimator.INFINITE); // 无限次
+        scaleY.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+        scaleX.setRepeatMode(android.animation.ValueAnimator.REVERSE); // 放大完自动缩回
+        scaleY.setRepeatMode(android.animation.ValueAnimator.REVERSE);
+        
+        scaleX.start();
+        scaleY.start();
+        // ==================================================
+
         // 2. 科技蓝细线条滚动效果
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         pb.setIndeterminate(true);
