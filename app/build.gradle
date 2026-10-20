@@ -8,12 +8,9 @@ android {
         targetSdkVersion 28
         minSdkVersion 21 // 兼容安卓 5.1
         
-        // 【神仙逻辑】优先读取 GitHub Actions 传入的版本号，如果没有（比如本地编译），就用默认的
-        def appVerName = project.hasProperty("versionName") ? project.property("versionName") : "1.0.0"
-        def appVerCode = project.hasProperty("versionCode") ? project.property("versionCode") : "1"
-        
-        versionName appVerName
-        versionCode appVerCode.toInteger()
+        // 【必须写死】交由云端脚本自动 +1
+        versionName '1.0.0'
+        versionCode 1
         
         multiDexEnabled true
 
