@@ -6,11 +6,9 @@ import android.animation.AnimatorSet;
 import android.animation.IntEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -114,7 +112,7 @@ public class HomeActivity extends BaseActivity {
     private long mExitTime = 0;
     private boolean eventBusRegistered = false;
 
-    // ================= 【新增：自定义启动遮罩层相关】 =================
+    // ================= 【自定义启动遮罩层相关】 =================
     private View mySplashOverlay = null;
     private boolean isOverlayHidden = false;
     // ===============================================================
@@ -181,8 +179,7 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
-        // ================= 【强行把底层窗口刷成纯黑，干掉蓝色底图】 =================
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        // 【已清理】移除了强刷黑底的代码，现在完全依赖你替换的 app_bg.jpg
 
         this.topLayout = findViewById(R.id.topLayout);
         this.tvDate = findViewById(R.id.tvDate);
@@ -190,11 +187,6 @@ public class HomeActivity extends BaseActivity {
         this.contentLayout = findViewById(R.id.contentLayout);
         this.mGridView = findViewById(R.id.mGridView);
         this.mViewPager = findViewById(R.id.mViewPager);
-
-        // ================= 【强行把内容容器刷成纯黑】 =================
-        if (this.contentLayout != null) {
-            this.contentLayout.setBackgroundColor(Color.BLACK);
-        }
 
         // ================= 【动态创建启动遮罩层】 =================
         initSplashOverlay();
@@ -440,7 +432,6 @@ public class HomeActivity extends BaseActivity {
         });
     }
 
-    // ... 下面的代码全部保持你原来的样子，不用动 ...
     private boolean dataInitOk = false;
     private boolean jarInitOk = false;
     private boolean searchSpiderWarmStarted = false;
