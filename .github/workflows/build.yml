@@ -29,13 +29,24 @@ jobs:
     - name: Create local.properties
       run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-    - name: Generate Fixed Keystore
+    # =========================================================
+    # 【核心修复】只生成一次签名，并直接推到仓库永久保存！
+    # =========================================================
+    - name: Ensure Fixed Keystore
       run: |
-        keytool -genkeypair -v -keystore app/release.keystore -alias stvbox -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=STVBox, OU=Dev, O=Dev, L=SZ, ST=SZ, C=CN"
+        if [ ! -f app/release.keystore ]; then
+          echo "首次生成固定签名文件..."
+          keytool -genkeypair -v -keystore app/release.keystore -alias stvbox -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=STVBox, OU=Dev, O=Dev, L=SZ, ST=SZ, C=CN"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/release.keystore
+          git commit -m "Add fixed release keystore [skip ci]"
+          git push
+        else
+          echo "签名文件已在仓库中，直接使用！"
+        fi
 
-    # =========================================================
-    # 【逻辑翻转】在编译之前，先算出新版本号，直接改掉 build.gradle
-    # =========================================================
+    # 打包前先升级版本号
     - name: Bump Version Before Build
       run: |
         python3 << 'EOF'
@@ -51,18 +62,15 @@ jobs:
             old_code = int(code_match.group(1))
             old_name = name_match.group(1)
             
-            # 版本号 +1
             new_code = old_code + 1
             parts = old_name.split('.')
             parts[-1] = str(int(parts[-1]) + 1)
             new_name = '.'.join(parts)
             
-            # 替换文件里的数字
             content = re.sub(r'versionCode\s+\d+', f'versionCode {new_code}', content)
             content = re.sub(r"versionName\s+['\"][\d\.]+['\"]", f"versionName '{new_name}'", content)
             open(file, 'w').write(content)
             
-            # 把新版本号传给后续的步骤用
             with open(os.environ['GITHUB_ENV'], 'a') as env_file:
                 env_file.write(f"NEW_VERSION={new_name}\n")
         EOF
@@ -85,9 +93,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # =========================================================
-    # 如果打包彻底成功了，才把刚刚修改的代码提交回仓库
-    # =========================================================
     - name: Commit and Push
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
