@@ -90,6 +90,7 @@ jobs:
         tag_name: v${{ env.NEW_VERSION }}
         name: STVBox v${{ env.NEW_VERSION }}
         files: app/build/outputs/apk/release/*.apk
+        make_latest: true # 【加上这行，强制让每次发布的新版本都坐上“最新”的release清单】
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
