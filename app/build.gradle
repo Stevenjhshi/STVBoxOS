@@ -9,8 +9,8 @@ android {
         minSdkVersion 21 // 兼容安卓 5.1
         
         // 【必须写死】交由云端脚本自动 +1
-        versionName '1.0.5'
-        versionCode 6
+        versionName '1.0.6'
+        versionCode 7
         
         multiDexEnabled true
 
