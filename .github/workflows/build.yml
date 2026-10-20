@@ -29,16 +29,43 @@ jobs:
     - name: Create local.properties
       run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-    # 【核心】直接生成一个固定的签名文件（再也不报错）
     - name: Generate Fixed Keystore
       run: |
         keytool -genkeypair -v -keystore app/release.keystore -alias stvbox -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=STVBox, OU=Dev, O=Dev, L=SZ, ST=SZ, C=CN"
 
-    - name: Get Version
-      id: get_ver
+    # =========================================================
+    # 【逻辑翻转】在编译之前，先算出新版本号，直接改掉 build.gradle
+    # =========================================================
+    - name: Bump Version Before Build
       run: |
-        VERSION=$(python3 -c "import re; print(re.search(r\"versionName\s+['\\\"]([\\d\\.]+)['\\\"]\", open('app/build.gradle').read()).group(1))")
-        echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+        python3 << 'EOF'
+        import re
+        import os
+        file = 'app/build.gradle'
+        content = open(file).read()
+        
+        code_match = re.search(r'versionCode\s+(\d+)', content)
+        name_match = re.search(r"versionName\s+['\"]([\d\.]+)['\"]", content)
+        
+        if code_match and name_match:
+            old_code = int(code_match.group(1))
+            old_name = name_match.group(1)
+            
+            # 版本号 +1
+            new_code = old_code + 1
+            parts = old_name.split('.')
+            parts[-1] = str(int(parts[-1]) + 1)
+            new_name = '.'.join(parts)
+            
+            # 替换文件里的数字
+            content = re.sub(r'versionCode\s+\d+', f'versionCode {new_code}', content)
+            content = re.sub(r"versionName\s+['\"][\d\.]+['\"]", f"versionName '{new_name}'", content)
+            open(file, 'w').write(content)
+            
+            # 把新版本号传给后续的步骤用
+            with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+                env_file.write(f"NEW_VERSION={new_name}\n")
+        EOF
 
     - name: Build with Gradle
       run: ./gradlew :app:assembleRelease
@@ -46,40 +73,23 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: STVBox-v${{ env.APP_VERSION }}
+        name: STVBox-v${{ env.NEW_VERSION }}
         path: app/build/outputs/apk/release/*.apk
 
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: v${{ env.APP_VERSION }}
-        name: STVBox v${{ env.APP_VERSION }}
+        tag_name: v${{ env.NEW_VERSION }}
+        name: STVBox v${{ env.NEW_VERSION }}
         files: app/build/outputs/apk/release/*.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Auto Bump Version
-      run: |
-        python3 << 'EOF'
-        import re
-        file = 'app/build.gradle'
-        content = open(file).read()
-        code_match = re.search(r'versionCode\s+(\d+)', content)
-        if code_match:
-            old_code = int(code_match.group(1))
-            content = re.sub(r'versionCode\s+\d+', f'versionCode {old_code + 1}', content)
-        name_match = re.search(r"versionName\s+['\"]([\d\.]+)['\"]", content)
-        if name_match:
-            old_name = name_match.group(1)
-            parts = old_name.split('.')
-            parts[-1] = str(int(parts[-1]) + 1)
-            new_name = '.'.join(parts)
-            content = re.sub(r"versionName\s+['\"][\d\.]+['\"]", f"versionName '{new_name}'", content)
-        open(file, 'w').write(content)
-        EOF
-
+    # =========================================================
+    # 如果打包彻底成功了，才把刚刚修改的代码提交回仓库
+    # =========================================================
     - name: Commit and Push
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        commit_message: "Auto bump version [skip ci]"
+        commit_message: "Auto bump version to ${{ env.NEW_VERSION }} [skip ci]"
         file_pattern: app/build.gradle
