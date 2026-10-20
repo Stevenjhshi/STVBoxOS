@@ -21,12 +21,12 @@ public class SearchAdapter extends BaseQuickAdapter<Movie.Video, BaseViewHolder>
     private static final int SEARCH_POSTER_HEIGHT = 240;
 
     public SearchAdapter() {
-        super(Hawk.get(HawkConfig.SEARCH_VIEW, 0) == 0 ? R.layout.item_search_lite : R.layout.item_search_normal, new ArrayList<>());
+        super(Hawk.get(HawkConfig.SEARCH_VIEW, 1) == 0 ? R.layout.item_search_lite : R.layout.item_search_normal, new ArrayList<>());
     }
 
     @Override
     protected void convert(BaseViewHolder helper, Movie.Video item) {
-        if (Hawk.get(HawkConfig.SEARCH_VIEW, 0) == 0) {
+        if (Hawk.get(HawkConfig.SEARCH_VIEW, 1) == 0) {
             helper.setText(R.id.tvName, String.format("%s  %s %s %s", ApiConfig.get().getSource(item.sourceKey).getName(), item.name, item.type == null ? "" : item.type, item.note == null ? "" : item.note));
         } else {
             helper.setText(R.id.tvName, item.name);
