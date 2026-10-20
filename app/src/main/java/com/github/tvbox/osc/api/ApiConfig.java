@@ -191,7 +191,8 @@ public class ApiConfig {
         return configUrl;
     }
     public void loadConfig(boolean useCache, LoadConfigCallback callback, Activity activity) {
-        String apiUrl = Hawk.get(HawkConfig.API_URL, "");
+        // 【修改点1】把 "" 换成你的内置源地址。如果是网络链接，直接写 http://...；如果是放本地，写 assets://你的文件名.json
+        String apiUrl = Hawk.get(HawkConfig.API_URL, "https://qist.wyfc.qzz.io/fty.json"); 
         if (apiUrl.isEmpty()) {
             callback.error("-1");
             return;
@@ -259,7 +260,8 @@ public class ApiConfig {
     }
 
     public void loadLiveConfig(boolean useCache, LoadConfigCallback callback) {
-        String apiUrl = Hawk.get(HawkConfig.LIVE_API_URL, "");
+        // 【修改点2】填入你的直播源地址
+        String apiUrl = Hawk.get(HawkConfig.LIVE_API_URL, "https://qist.wyfc.qzz.io/fty.json");
         if (apiUrl.isEmpty()) {
             apiUrl = Hawk.get(HawkConfig.API_URL, "");
         }
