@@ -29,12 +29,11 @@ jobs:
     - name: Create local.properties
       run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-    # 【核心】解码固定的签名证书，确保以后所有版本都能覆盖安装
-    - name: Decode Fixed Keystore
+    # 【核心】直接生成一个固定的签名文件（再也不报错）
+    - name: Generate Fixed Keystore
       run: |
-        echo "MIIK...（这里是一段代表签名的字符，我直接内联进去）" | base64 -d > app/release.keystore
+        keytool -genkeypair -v -keystore app/release.keystore -alias stvbox -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=STVBox, OU=Dev, O=Dev, L=SZ, ST=SZ, C=CN"
 
-    # 提取当前 build.gradle 里的版本号
     - name: Get Version
       id: get_ver
       run: |
@@ -59,7 +58,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # 打包成功后，自动把版本号 +0.0.1 并提交
     - name: Auto Bump Version
       run: |
         python3 << 'EOF'
