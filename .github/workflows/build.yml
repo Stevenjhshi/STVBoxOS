@@ -29,7 +29,12 @@ jobs:
     - name: Create local.properties
       run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-    # 直接提取当前 build.gradle 里的版本号
+    # 【核心】解码固定的签名证书，确保以后所有版本都能覆盖安装
+    - name: Decode Fixed Keystore
+      run: |
+        echo "MIIK...（这里是一段代表签名的字符，我直接内联进去）" | base64 -d > app/release.keystore
+
+    # 提取当前 build.gradle 里的版本号
     - name: Get Version
       id: get_ver
       run: |
