@@ -334,23 +334,35 @@ public class HomeActivity extends BaseActivity {
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.BLACK);
 
-        // 1. 【视频背景】加载你的 MP4
+        // 1. 【垫图】先放一张静态图，保证视频缓冲时画面不黑屏
+        android.widget.ImageView staticImg = new android.widget.ImageView(this);
+        staticImg.setImageResource(R.drawable.splash_bg);
+        staticImg.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+        overlay.addView(staticImg, new FrameLayout.LayoutParams(-1, -1));
+
+        // 2. 【视频】创建 VideoView，默认隐藏
         android.widget.VideoView videoBg = new android.widget.VideoView(this);
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         videoBg.setVideoURI(android.net.Uri.parse(videoPath));
+        
+        // 初始设为不可见
+        videoBg.setVisibility(View.INVISIBLE); 
         
         videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
                 mp.setLooping(true); // 循环播放
                 mp.setVolume(0, 0);  // 强制静音
-                videoBg.start();     // 开始播放
+                // 【无缝切换】视频准备好了，瞬间显示视频并开始播放，同时把垫图藏起来
+                videoBg.setVisibility(View.VISIBLE);
+                videoBg.start(); 
+                staticImg.setVisibility(View.GONE);
             }
         });
         // 将视频铺满全屏
         overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
 
-        // 2. 科技蓝细线条滚动效果
+        // 3. 科技蓝细线条滚动效果
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         pb.setIndeterminate(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -361,7 +373,7 @@ public class HomeActivity extends BaseActivity {
         pbLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
         overlay.addView(pb, pbLp);
 
-        // 3. 数据加载中提示
+        // 4. 数据加载中提示
         TextView tvLoad = new TextView(this);
         tvLoad.setText("数据加载中...");
         tvLoad.setTextColor(Color.parseColor("#1890FF"));
@@ -386,14 +398,15 @@ public class HomeActivity extends BaseActivity {
         if (isOverlayHidden || mySplashOverlay == null) return;
         isOverlayHidden = true;
         
-        // 【核心】停止视频播放，释放资源
-        try {
-            android.widget.VideoView videoView = (android.widget.VideoView) ((android.view.ViewGroup)mySplashOverlay).getChildAt(0);
-            if (videoView != null) {
-                videoView.stopPlayback(); 
+        // 【核心】遍历并停止视频播放，释放资源
+        if (mySplashOverlay instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) mySplashOverlay;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child = group.getChildAt(i);
+                if (child instanceof android.widget.VideoView) {
+                    ((android.widget.VideoView) child).stopPlayback();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         mySplashOverlay.animate()
