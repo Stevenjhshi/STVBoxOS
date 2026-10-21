@@ -9,6 +9,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,8 @@ import android.os.Looper;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -23,6 +27,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -114,6 +119,7 @@ public class HomeActivity extends BaseActivity {
     // ================= 【自定义启动遮罩层相关】 =================
     private View mySplashOverlay = null;
     private boolean isOverlayHidden = false;
+    private MediaPlayer mSplashMediaPlayer; // 核心：用 MediaPlayer 取代 VideoView
     // ===============================================================
 
     private final Runnable mRunnable = new Runnable() {
@@ -326,7 +332,7 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
-    // ================= 【核心方法：极简视频遮罩层】 =================
+    // ================= 【核心方法：使用 TextureView 彻底解决穿透和卡顿】 =================
     private void initSplashOverlay() {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
@@ -334,41 +340,66 @@ public class HomeActivity extends BaseActivity {
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.BLACK);
 
-        // 1. 【视频背景】加载你的 MP4
-        android.widget.VideoView videoBg = new android.widget.VideoView(this);
-        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
-        videoBg.setVideoURI(android.net.Uri.parse(videoPath));
-        
-        videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(android.media.MediaPlayer mp) {
-                mp.setLooping(true); // 恢复循环
-                mp.setVolume(0, 0);  // 强制静音
-                videoBg.start();     // 开始播放
-            }
-        });
-        overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
+        // 1. 【底层垫图】当视频还没准备好时显示，防止黑屏
+        ImageView staticImg = new ImageView(this);
+        staticImg.setImageResource(R.drawable.splash_bg);
+        staticImg.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        overlay.addView(staticImg, new FrameLayout.LayoutParams(-1, -1));
 
-        // 2. 科技蓝细线条滚动效果
+        // 2. 【中层】使用 TextureView 播放视频，它是普通 View 层级，绝不穿透！
+        TextureView textureView = new TextureView(this);
+        overlay.addView(textureView, new FrameLayout.LayoutParams(-1, -1));
+
+        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height) {
+                try {
+                    mSplashMediaPlayer = new MediaPlayer();
+                    android.content.res.AssetFileDescriptor afd = getResources().openRawResourceFd(R.raw.splash_video);
+                    mSplashMediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                    afd.close();
+                    mSplashMediaPlayer.setSurface(new Surface(surface));
+                    mSplashMediaPlayer.setLooping(true);
+                    mSplashMediaPlayer.setVolume(0, 0);
+                    mSplashMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mp.start();
+                            staticImg.setVisibility(View.GONE); // 视频播放了，隐藏垫图
+                        }
+                    });
+                    mSplashMediaPlayer.prepareAsync();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture surface, int width, int height) {}
+            @Override
+            public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surface) {
+                return false;
+            }
+            @Override
+            public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface) {}
+        });
+
+        // 3. 【顶层】科技蓝细线条滚动效果（因为 TextureView 是普通 View，这里自然就在最上面）
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         pb.setIndeterminate(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             pb.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor("#1890FF"))); 
         }
-        // 强行拔高层级，防止被视频底层盖住
-        pb.setElevation(100f); 
         FrameLayout.LayoutParams pbLp = new FrameLayout.LayoutParams(AutoSizeUtils.mm2px(this, 350), AutoSizeUtils.mm2px(this, 4));
         pbLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         pbLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
         overlay.addView(pb, pbLp);
 
-        // 3. 数据加载中提示
+        // 4. 【顶层】数据加载中提示
         TextView tvLoad = new TextView(this);
         tvLoad.setText("数据加载中...");
         tvLoad.setTextColor(Color.parseColor("#1890FF"));
         tvLoad.setTextSize(18);
-        // 强行拔高层级
-        tvLoad.setElevation(100f);
         FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
         tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 110);
@@ -382,7 +413,7 @@ public class HomeActivity extends BaseActivity {
         }, 15000);
     }
 
-    // ================= 【核心方法：安全淡出遮罩层】 =================
+    // ================= 【核心方法：安全淡出遮罩层并释放资源】 =================
     private void hideSplashOverlay() {
         if (isOverlayHidden || mySplashOverlay == null) return;
         isOverlayHidden = true;
@@ -391,14 +422,15 @@ public class HomeActivity extends BaseActivity {
                 .alpha(0f)
                 .setDuration(600)
                 .withEndAction(() -> {
-                    if (mySplashOverlay instanceof ViewGroup) {
-                        ViewGroup group = (ViewGroup) mySplashOverlay;
-                        for (int i = 0; i < group.getChildCount(); i++) {
-                            View child = group.getChildAt(i);
-                            if (child instanceof android.widget.VideoView) {
-                                ((android.widget.VideoView) child).stopPlayback();
-                            }
+                    // 释放 MediaPlayer
+                    if (mSplashMediaPlayer != null) {
+                        try {
+                            mSplashMediaPlayer.stop();
+                            mSplashMediaPlayer.release();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+                        mSplashMediaPlayer = null;
                     }
                     if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
                         ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
@@ -902,6 +934,15 @@ public class HomeActivity extends BaseActivity {
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
         unregisterEventBus();
+        if (mSplashMediaPlayer != null) {
+            try {
+                mSplashMediaPlayer.stop();
+                mSplashMediaPlayer.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mSplashMediaPlayer = null;
+        }
         if (isFinishing()) {
             ControlManager.get().stopServer();
         }
