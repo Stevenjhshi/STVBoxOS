@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -347,9 +348,11 @@ public class PlayFragment extends BaseLazyFragment {
                         VodInfo.VodSeries series = mVodInfo == null ? null : getCurrentSeries(mVodInfo.playFlag, mVodInfo.playIndex);
                         searchDanmuDialog.setEpisode(series == null ? "" : series.name);
                         searchDanmuDialog.setSearchWord(mVodInfo == null ? "" : mVodInfo.name);
+                        setDialogTransparent(searchDanmuDialog);
                         searchDanmuDialog.show();
                     }
                 });
+                setDialogTransparent(dialog);
                 dialog.show();
             }
 
@@ -469,6 +472,14 @@ public class PlayFragment extends BaseLazyFragment {
         mVideoView.setVideoController(mController);
     }
 
+    // 【新增】设置弹窗背景透明的方法
+    private void setDialogTransparent(android.app.Dialog dialog) {
+        if (dialog != null && dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().setDimAmount(0.1f); // 调低背景遮罩浓度
+        }
+    }
+
     private void showCastDialog() {
         if (TextUtils.isEmpty(webPlayUrl)) {
             Toast.makeText(mContext, "暂无可投屏播放地址", Toast.LENGTH_SHORT).show();
@@ -487,6 +498,7 @@ public class PlayFragment extends BaseLazyFragment {
             public void onCastFailed() {
             }
         });
+        setDialogTransparent(dialog);
         dialog.show();
     }
 
@@ -609,6 +621,7 @@ public class PlayFragment extends BaseLazyFragment {
                 }else {
                     searchSubtitleDialog.setSearchWord(mVodInfo.name);
                 }
+                setDialogTransparent(searchSubtitleDialog);
                 searchSubtitleDialog.show();
             }
         });
@@ -629,6 +642,7 @@ public class PlayFragment extends BaseLazyFragment {
                         .show();
             }
         });
+        setDialogTransparent(subtitleDialog);
         subtitleDialog.show();
     }
 
@@ -703,6 +717,7 @@ public class PlayFragment extends BaseLazyFragment {
                 return isSameTrack(oldItem, newItem);
             }
         }, bean, trackInfo.getAudioSelected(false));
+        setDialogTransparent(dialog);
         dialog.show();
     }
 
@@ -763,6 +778,7 @@ public class PlayFragment extends BaseLazyFragment {
                 return isSameTrack(oldItem, newItem);
             }
         }, tracks, trackInfo.getVideoSelected(false));
+        setDialogTransparent(dialog);
         dialog.show();
     }
 
@@ -835,6 +851,7 @@ public class PlayFragment extends BaseLazyFragment {
                 return isSameTrack(oldItem, newItem);
             }
         }, bean, trackInfo.getSubtitleSelected(false));
+        setDialogTransparent(dialog);
         dialog.show();
     }
 
@@ -1650,6 +1667,7 @@ public class PlayFragment extends BaseLazyFragment {
                 play(false);
             }
         });
+        setDialogTransparent(dialog);
         dialog.show();
     }
 
