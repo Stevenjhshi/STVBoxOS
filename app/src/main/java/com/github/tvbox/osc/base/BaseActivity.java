@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -67,8 +69,8 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         }
         super.onCreate(savedInstanceState);
         
-        // 系统冷启动直接给纯黑背景
-        getWindow().setBackgroundDrawableResource(android.R.color.black);
+        // 【核心修改】底层背景使用深邃黑
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
         
         setContentView(getLayoutResID());
         mContext = this;
@@ -308,11 +310,11 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             globalWp = null;
         }
         
-        // 【治病根】如果没有自定义壁纸，坚决不加载 R.drawable.app_bg，直接给纯黑！
+        // 【治病根】如果没有自定义壁纸，使用深邃黑
         if (globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
         } else {
-            getWindow().setBackgroundDrawableResource(android.R.color.black);
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
         }
     }
 }
