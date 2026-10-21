@@ -23,7 +23,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -179,8 +178,6 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
-        // 【已清理】移除了强刷黑底的代码，现在完全依赖你替换的 app_bg.jpg
-
         this.topLayout = findViewById(R.id.topLayout);
         this.tvDate = findViewById(R.id.tvDate);
         this.tvName = findViewById(R.id.tvName);
@@ -329,7 +326,7 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
-    // ================= 【核心方法：动态构建你的科技蓝加载遮罩层】 =================
+    // ================= 【核心方法：动态构建你的视频启动遮罩层】 =================
     private void initSplashOverlay() {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
@@ -337,31 +334,21 @@ public class HomeActivity extends BaseActivity {
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.BLACK);
 
-        // 1. 背景图（你的启动图）
-        ImageView bg = new ImageView(this);
-        bg.setImageResource(R.drawable.splash_bg);
-        bg.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        overlay.addView(bg, new FrameLayout.LayoutParams(-1, -1));
-
-        // ================= 【纯代码特效】 =================
-        // 特效A：一开始从完全透明，用 800 毫秒平滑浮现出来
-        bg.setAlpha(0f);
-        bg.animate().alpha(1f).setDuration(800).start();
-
-        // 特效B：持续“呼吸缩放”，放大 1.08 倍再缩回，无限循环
-        android.animation.ObjectAnimator scaleX = android.animation.ObjectAnimator.ofFloat(bg, "scaleX", 1.0f, 1.08f);
-        android.animation.ObjectAnimator scaleY = android.animation.ObjectAnimator.ofFloat(bg, "scaleY", 1.0f, 1.08f);
+        // 1. 【视频背景】加载你的 MP4
+        android.widget.VideoView videoBg = new android.widget.VideoView(this);
+        String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
+        videoBg.setVideoURI(android.net.Uri.parse(videoPath));
         
-        scaleX.setDuration(2500); // 2.5秒完成一次放大
-        scaleY.setDuration(2500);
-        scaleX.setRepeatCount(android.animation.ValueAnimator.INFINITE); // 无限次
-        scaleY.setRepeatCount(android.animation.ValueAnimator.INFINITE);
-        scaleX.setRepeatMode(android.animation.ValueAnimator.REVERSE); // 放大完自动缩回
-        scaleY.setRepeatMode(android.animation.ValueAnimator.REVERSE);
-        
-        scaleX.start();
-        scaleY.start();
-        // ==================================================
+        videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(android.media.MediaPlayer mp) {
+                mp.setLooping(true); // 循环播放
+                mp.setVolume(0, 0);  // 强制静音
+                videoBg.start();     // 开始播放
+            }
+        });
+        // 将视频铺满全屏
+        overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
 
         // 2. 科技蓝细线条滚动效果
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
@@ -394,10 +381,21 @@ public class HomeActivity extends BaseActivity {
         }, 15000);
     }
 
-    // ================= 【核心方法：数据加载成功后，让遮罩层淡出消失】 =================
+    // ================= 【核心方法：数据加载成功后，让遮罩层淡出消失并停止视频】 =================
     private void hideSplashOverlay() {
         if (isOverlayHidden || mySplashOverlay == null) return;
         isOverlayHidden = true;
+        
+        // 【核心】停止视频播放，释放资源
+        try {
+            android.widget.VideoView videoView = (android.widget.VideoView) ((android.view.ViewGroup)mySplashOverlay).getChildAt(0);
+            if (videoView != null) {
+                videoView.stopPlayback(); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         mySplashOverlay.animate()
                 .alpha(0f)
                 .setDuration(600)
