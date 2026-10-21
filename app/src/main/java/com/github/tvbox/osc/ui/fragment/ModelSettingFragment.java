@@ -810,6 +810,19 @@ public class ModelSettingFragment extends BaseLazyFragment {
 
         findViewById(R.id.llIjkCachePlay).setOnClickListener((view -> onClickIjkCachePlay(view)));
         findViewById(R.id.llClearCache).setOnClickListener((view -> onClickClearCache(view)));
+
+        // ================= 【新增】动态读取并显示版本号 =================
+        try {
+            TextView tvAppVersion = findViewById(R.id.tvAppVersion);
+            if (tvAppVersion != null) {
+                String versionName = mContext.getPackageManager()
+                        .getPackageInfo(mContext.getPackageName(), 0).versionName;
+                tvAppVersion.setText("v" + versionName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // ============================================================
     }
 
     private void restartAppAfterConfigChanged() {
