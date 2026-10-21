@@ -15,14 +15,12 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowNoTitle">true</item>
         <item name="android:keepScreenOn">true</item>
-        
-        <!-- 【修改1】将原来的透明背景改成纯黑，完美解决“所有界面纯黑”需求 -->
         <item name="android:windowBackground">#000000</item>
     </style>
 
-    <!-- 【新增2】专门用来显示你的启动图，进 App 前会先走这个主题 -->
+    <!-- 【核心修改】取消静态图，改为纯黑，彻底干掉冷启动掉帧卡顿 -->
     <style name="SplashTheme" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_bg</item>
+        <item name="android:windowBackground">#000000</item>
     </style>
 
     <!-- 自定义dialog样式 -->
