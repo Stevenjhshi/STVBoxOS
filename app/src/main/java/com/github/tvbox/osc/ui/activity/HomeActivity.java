@@ -334,7 +334,7 @@ public class HomeActivity extends BaseActivity {
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.BLACK);
 
-        // 1. 视频背景
+        // 1. 【视频背景】加载你的 MP4
         android.widget.VideoView videoBg = new android.widget.VideoView(this);
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         videoBg.setVideoURI(android.net.Uri.parse(videoPath));
@@ -342,7 +342,7 @@ public class HomeActivity extends BaseActivity {
         videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
-                mp.setLooping(true); // 循环播放
+                mp.setLooping(true); // 恢复循环
                 mp.setVolume(0, 0);  // 强制静音
                 videoBg.start();     // 开始播放
             }
@@ -355,6 +355,8 @@ public class HomeActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             pb.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor("#1890FF"))); 
         }
+        // 强行拔高层级，防止被视频底层盖住
+        pb.setElevation(100f); 
         FrameLayout.LayoutParams pbLp = new FrameLayout.LayoutParams(AutoSizeUtils.mm2px(this, 350), AutoSizeUtils.mm2px(this, 4));
         pbLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         pbLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
@@ -365,6 +367,8 @@ public class HomeActivity extends BaseActivity {
         tvLoad.setText("数据加载中...");
         tvLoad.setTextColor(Color.parseColor("#1890FF"));
         tvLoad.setTextSize(18);
+        // 强行拔高层级
+        tvLoad.setElevation(100f);
         FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
         tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 110);
