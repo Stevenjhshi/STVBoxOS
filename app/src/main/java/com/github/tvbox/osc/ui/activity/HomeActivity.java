@@ -8,10 +8,10 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
@@ -116,10 +116,8 @@ public class HomeActivity extends BaseActivity {
     private long mExitTime = 0;
     private boolean eventBusRegistered = false;
 
-    // ================= 【自定义启动遮罩层相关】 =================
     private View mySplashOverlay = null;
     private boolean isOverlayHidden = false;
-    // ===============================================================
 
     private final Runnable mRunnable = new Runnable() {
         @SuppressLint("SetTextI18n")
@@ -183,6 +181,10 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
+        // 【核心修复】强行把整个底层窗口和根布局涂成纯黑，干掉暗淡杂乱的背景
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        findViewById(android.R.id.content).setBackgroundColor(Color.BLACK);
+
         this.topLayout = findViewById(R.id.topLayout);
         this.tvDate = findViewById(R.id.tvDate);
         this.tvName = findViewById(R.id.tvName);
@@ -190,7 +192,6 @@ public class HomeActivity extends BaseActivity {
         this.mGridView = findViewById(R.id.mGridView);
         this.mViewPager = findViewById(R.id.mViewPager);
 
-        // ================= 【动态创建启动遮罩层】 =================
         initSplashOverlay();
 
         this.sortAdapter = new SortAdapter();
@@ -331,15 +332,14 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
-    // ================= 【核心方法：极简视频遮罩层 + 赛博朋克霓虹流光】 =================
     private void initSplashOverlay() {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
 
+        // 【核心修复】不要设置黑色背景！让它透明，这样视频循环时哪怕黑帧漏出来，也能透出底下的黑底，而不是一个突兀的黑块
         FrameLayout overlay = new FrameLayout(this);
-        overlay.setBackgroundColor(Color.BLACK);
+        overlay.setBackgroundColor(Color.TRANSPARENT);
 
-        // 1. 纯粹的 VideoView
         android.widget.VideoView videoBg = new android.widget.VideoView(this);
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         videoBg.setVideoURI(android.net.Uri.parse(videoPath));
@@ -354,30 +354,24 @@ public class HomeActivity extends BaseActivity {
         });
         overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
 
-        // ================= 【全新升级：赛博朋克霓虹流光进度条】 =================
         int barWidth = AutoSizeUtils.mm2px(this, 350);
-        int barHeight = AutoSizeUtils.mm2px(this, 3); // 极细的线
+        int barHeight = AutoSizeUtils.mm2px(this, 3); 
 
-        // 容器，用于限制光晕滑动的范围
         FrameLayout progressContainer = new FrameLayout(this);
         FrameLayout.LayoutParams containerLp = new FrameLayout.LayoutParams(barWidth, barHeight);
         containerLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         containerLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
         progressContainer.setLayoutParams(containerLp);
 
-        // A. 底部半透明的底轨
         View baseLine = new View(this);
-        baseLine.setBackgroundColor(Color.parseColor("#3300A2FF")); // 20%透明度的科技蓝
+        baseLine.setBackgroundColor(Color.parseColor("#3300A2FF")); 
         progressContainer.addView(baseLine, new FrameLayout.LayoutParams(-1, -1));
 
-        // B. 中间扫过的流光 (使用渐变 Shader)
         View shimmerView = new View(this);
-        // 流光宽度大约是底轨的一半
         int shimmerWidth = barWidth / 2;
         FrameLayout.LayoutParams shimmerLp = new FrameLayout.LayoutParams(shimmerWidth, -1);
         shimmerView.setLayoutParams(shimmerLp);
         
-        // 创建渐变：透明 -> 纯白蓝 -> 透明
         LinearGradient gradient = new LinearGradient(
                 0, 0, shimmerWidth, 0,
                 new int[]{Color.TRANSPARENT, Color.parseColor("#00E5FF"), Color.WHITE, Color.parseColor("#00E5FF"), Color.TRANSPARENT},
@@ -390,26 +384,23 @@ public class HomeActivity extends BaseActivity {
 
         progressContainer.addView(shimmerView);
 
-        // C. 给流光加上平滑的左右往返动画
         ObjectAnimator animator = ObjectAnimator.ofFloat(shimmerView, "translationX", 0f, (float)(barWidth - shimmerWidth));
-        animator.setDuration(1500); // 1.5秒扫过一次
-        animator.setInterpolator(new AccelerateDecelerateInterpolator()); // 两头慢，中间快的丝滑曲线
-        animator.setRepeatMode(ValueAnimator.REVERSE); // 扫过去再扫回来
+        animator.setDuration(1500); 
+        animator.setInterpolator(new AccelerateDecelerateInterpolator()); 
+        animator.setRepeatMode(ValueAnimator.REVERSE); 
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.start();
 
         overlay.addView(progressContainer);
-        // ========================================================================
 
-        // 3. 数据加载中提示 (稍微调小了字号，配合极细的线条显得更高级)
         TextView tvLoad = new TextView(this);
         tvLoad.setText("数据加载中...");
-        tvLoad.setTextColor(Color.parseColor("#00E5FF")); // 改成更亮眼的霓虹蓝
-        tvLoad.setTextSize(14); // 字号调小
-        tvLoad.setLetterSpacing(0.1f); // 字间距拉开，更有高级感
+        tvLoad.setTextColor(Color.parseColor("#00E5FF")); 
+        tvLoad.setTextSize(14); 
+        tvLoad.setLetterSpacing(0.1f); 
         FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
         tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 120); // 往上挪一点，别贴着线条
+        tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 120); 
         overlay.addView(tvLoad, tvLp);
 
         getWindow().addContentView(overlay, new ViewGroup.LayoutParams(-1, -1));
@@ -420,7 +411,6 @@ public class HomeActivity extends BaseActivity {
         }, 15000);
     }
 
-    // ================= 【核心方法：最初的淡出效果】 =================
     private void hideSplashOverlay() {
         if (isOverlayHidden || mySplashOverlay == null) return;
         isOverlayHidden = true;
@@ -444,7 +434,6 @@ public class HomeActivity extends BaseActivity {
                     mySplashOverlay = null;
                 }).start();
     }
-    // ====================================================================
 
     private boolean skipNextUpdate = false;
 
@@ -804,7 +793,6 @@ public class HomeActivity extends BaseActivity {
         mHandler.postDelayed(refreshTopLayoutRunnable, 450);
         mHandler.post(mRunnable);
     }
-
 
     @Override
     protected void onPause() {
