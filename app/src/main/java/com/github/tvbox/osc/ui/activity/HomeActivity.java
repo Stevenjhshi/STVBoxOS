@@ -419,21 +419,22 @@ public class HomeActivity extends BaseActivity {
         }
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // 遍历并停止视频播放，释放资源
-            if (mySplashOverlay instanceof ViewGroup) {
-                ViewGroup group = (ViewGroup) mySplashOverlay;
-                for (int i = 0; i < group.getChildCount(); i++) {
-                    View child = group.getChildAt(i);
-                    if (child instanceof android.widget.VideoView) {
-                        ((android.widget.VideoView) child).stopPlayback();
-                    }
-                }
-            }
-
+            // 【关键修正】：让遮罩层带着还在播放的视频一起淡出
             mySplashOverlay.animate()
                     .alpha(0f)
                     .setDuration(600)
                     .withEndAction(() -> {
+                        // 【重要】：等彻底淡出看不见了，才去停止视频播放！
+                        if (mySplashOverlay instanceof ViewGroup) {
+                            ViewGroup group = (ViewGroup) mySplashOverlay;
+                            for (int i = 0; i < group.getChildCount(); i++) {
+                                View child = group.getChildAt(i);
+                                if (child instanceof android.widget.VideoView) {
+                                    ((android.widget.VideoView) child).stopPlayback();
+                                }
+                            }
+                        }
+                        // 移除遮罩层
                         if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
                             ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
                         }
