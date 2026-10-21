@@ -382,17 +382,19 @@
 		android:layout_gravity="bottom|center"
 		android:gravity="center_vertical"
 		android:id="@+id/ll_epg"
-		android:paddingBottom="5dp"
 		android:background="#66000000" 
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/vs_140">
+		<!-- 【修正1】删除了外层多余的 android:paddingBottom="5dp" -->
+
 		<View
 			android:id="@+id/view_bg"
 			android:background="@drawable/shape_user_focus"
 			android:layout_width="wrap_content"
-			android:layout_height="@dimen/vs_128"
+			android:layout_height="match_parent" 
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentBottom="true" />
+		<!-- 【修正2】把高度从 @dimen/vs_128 改成了 match_parent，让内外层完全等高对齐 -->
 
 		<LinearLayout
 			android:id="@+id/channelinfo"
@@ -515,7 +517,7 @@
 			android:layout_toRightOf="@+id/tv_current_program"
 			android:layout_alignTop="@+id/tv_current_program" />
 
-		<com.github.tvbox.osc.ui.tv.widget.MarqueeTextView
+		<com.github.tvbox.osc.ui.ui.tv.widget.MarqueeTextView
 			android:id="@+id/tv_current_program_name"
 			android:layout_width="@dimen/vs_440"
 			android:layout_height="wrap_content"
