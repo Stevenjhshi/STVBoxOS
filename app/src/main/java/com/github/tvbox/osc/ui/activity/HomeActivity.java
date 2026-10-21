@@ -349,18 +349,21 @@ public class HomeActivity extends BaseActivity {
         mSplashVideo.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
-                mp.setLooping(true); // 恢复循环（放在底层绝不出黑框）
+                mp.setLooping(false); // 不循环
                 mp.setVolume(0, 0);
                 mSplashVideo.start();
-                mSplashImg.setVisibility(View.GONE); // 视频准备好，藏起静态图
+                mSplashImg.setVisibility(View.GONE); // 视频开始，隐藏静态图
             }
         });
 
-        // 视频播完隐藏视频防穿透
+        // 视频播完后，恢复静态图显示
         mSplashVideo.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(android.media.MediaPlayer mp) {
                 mSplashVideo.setVisibility(View.GONE);
+                if (mSplashImg != null) {
+                    mSplashImg.setVisibility(View.VISIBLE); // 【关键补丁】视频播完重新显示静态图，绝不露黑底
+                }
             }
         });
         
