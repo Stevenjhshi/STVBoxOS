@@ -193,7 +193,6 @@ public class HomeActivity extends BaseActivity {
         this.mGridView = findViewById(R.id.mGridView);
         this.mViewPager = findViewById(R.id.mViewPager);
 
-        // 获取 XML 中的启动页和主界面
         this.mSplashContainer = findViewById(R.id.splash_container);
         this.mMainContentLayout = findViewById(R.id.main_content_layout);
         
@@ -352,18 +351,15 @@ public class HomeActivity extends BaseActivity {
                 mp.setLooping(false); // 不循环
                 mp.setVolume(0, 0);
                 mSplashVideo.start();
-                mSplashImg.setVisibility(View.GONE); // 视频开始，隐藏静态图
+                // 【核心修复】移除了隐藏静态图的代码，静态图永远在最底层垫着
             }
         });
 
-        // 视频播完后，恢复静态图显示
+        // 视频播完后，直接干掉视频层，底下的静态图自然露出来，0 掉帧
         mSplashVideo.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(android.media.MediaPlayer mp) {
                 mSplashVideo.setVisibility(View.GONE);
-                if (mSplashImg != null) {
-                    mSplashImg.setVisibility(View.VISIBLE); // 【关键补丁】视频播完重新显示静态图，绝不露黑底
-                }
             }
         });
         
@@ -406,7 +402,6 @@ public class HomeActivity extends BaseActivity {
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.start();
 
-        // 找到 XML 里那个 ProgressBar 的位置，把流光线盖上去，原来的隐藏掉
         View defaultPb = splashContainer.findViewById(R.id.splash_progress);
         if (defaultPb != null) defaultPb.setVisibility(View.GONE);
 
@@ -418,7 +413,6 @@ public class HomeActivity extends BaseActivity {
         if (isOverlayHidden || mSplashContainer == null) return;
         isOverlayHidden = true;
 
-        // 先让主界面显示出来（让它排在启动页下面）
         if (mMainContentLayout != null) {
             mMainContentLayout.setVisibility(View.VISIBLE);
         }
