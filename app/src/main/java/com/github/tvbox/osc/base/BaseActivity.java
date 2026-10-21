@@ -34,11 +34,6 @@ import me.jessyan.autosize.AutoSizeCompat;
 import me.jessyan.autosize.internal.CustomAdapt;
 import xyz.doikki.videoplayer.util.CutoutUtil;
 
-/**
- * @author pj567
- * @date :2020/12/17
- * @description:
- */
 public abstract class BaseActivity extends AppCompatActivity implements CustomAdapt {
     protected Context mContext;
     private LoadService mLoadService;
@@ -71,6 +66,10 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             th.printStackTrace();
         }
         super.onCreate(savedInstanceState);
+        
+        // 系统冷启动直接给纯黑背景
+        getWindow().setBackgroundDrawableResource(android.R.color.black);
+        
         setContentView(getLayoutResID());
         mContext = this;
         initSystemUiListener();
@@ -285,7 +284,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(wp.getAbsolutePath(), opts);
-                // 从Options中获取图片的分辨率
                 int imageHeight = opts.outHeight;
                 int imageWidth = opts.outWidth;
                 int picHeight = 720;
@@ -300,7 +298,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
                     scale = scaleY;
                 }
                 opts.inJustDecodeBounds = false;
-                // 采样率
                 opts.inSampleSize = scale;
                 globalWp = new BitmapDrawable(BitmapFactory.decodeFile(wp.getAbsolutePath(), opts));
             } else {
@@ -310,9 +307,12 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             throwable.printStackTrace();
             globalWp = null;
         }
-        if (globalWp != null)
+        
+        // 【治病根】如果没有自定义壁纸，坚决不加载 R.drawable.app_bg，直接给纯黑！
+        if (globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
-        else
-            getWindow().setBackgroundDrawableResource(R.drawable.app_bg);
+        } else {
+            getWindow().setBackgroundDrawableResource(android.R.color.black);
+        }
     }
 }
