@@ -1,7 +1,6 @@
 <resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/color_6200EE</item>
         <item name="colorPrimaryDark">@color/color_3700B3</item>
         <item name="colorAccent">@color/color_03DAC5</item>
@@ -15,12 +14,13 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowNoTitle">true</item>
         <item name="android:keepScreenOn">true</item>
-        <item name="android:windowBackground">#000000</item>
+        <!-- 【核心修改】全局深邃黑 -->
+        <item name="android:windowBackground">#121212</item>
     </style>
 
-    <!-- 【核心修改】取消静态图，改为纯黑，彻底干掉冷启动掉帧卡顿 -->
+    <!-- 【核心修改】冷启动深邃黑 -->
     <style name="SplashTheme" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">#000000</item>
+        <item name="android:windowBackground">#121212</item>
     </style>
 
     <!-- 自定义dialog样式 -->
