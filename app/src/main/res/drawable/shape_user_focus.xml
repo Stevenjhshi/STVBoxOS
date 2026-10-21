@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 聚焦状态：保留白色描边和圆角，去掉底部的 solid 填充色 -->
     <item android:state_focused="true">
         <shape>
             <corners android:radius="10mm" />
             <stroke android:width="2mm" android:color="@color/color_FFFFFF" />
-            <solid android:color="@color/color_6C3D3D3D" />
         </shape>
     </item>
+    
+    <!-- 未聚焦状态：什么都不填，纯透明，只保留圆角 -->
     <item android:state_focused="false">
         <shape>
             <corners android:radius="10mm" />
-            <solid android:color="#66000000" />
         </shape>
     </item>
 </selector>
