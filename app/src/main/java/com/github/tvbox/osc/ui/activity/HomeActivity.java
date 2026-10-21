@@ -114,6 +114,7 @@ public class HomeActivity extends BaseActivity {
     // ================= 【自定义启动遮罩层相关】 =================
     private View mySplashOverlay = null;
     private boolean isOverlayHidden = false;
+    private long overlayStartTime = 0; // 记录启动时间
     // ===============================================================
 
     private final Runnable mRunnable = new Runnable() {
@@ -330,37 +331,49 @@ public class HomeActivity extends BaseActivity {
     private void initSplashOverlay() {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
+        overlayStartTime = System.currentTimeMillis();
 
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.BLACK);
 
-        // 1. 【垫图】先放一张静态图，保证视频缓冲时画面不黑屏
-        android.widget.ImageView staticImg = new android.widget.ImageView(this);
-        staticImg.setImageResource(R.drawable.splash_bg);
-        staticImg.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
-        overlay.addView(staticImg, new FrameLayout.LayoutParams(-1, -1));
-
-        // 2. 【视频】创建 VideoView，默认隐藏
+        // 1. 【底层】先放视频，让它正常激活加载，绝对不隐藏！
         android.widget.VideoView videoBg = new android.widget.VideoView(this);
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         videoBg.setVideoURI(android.net.Uri.parse(videoPath));
-        
-        // 初始设为不可见
-        videoBg.setVisibility(View.INVISIBLE); 
         
         videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
                 mp.setLooping(true); // 循环播放
                 mp.setVolume(0, 0);  // 强制静音
-                // 【无缝切换】视频准备好了，瞬间显示视频并开始播放，同时把垫图藏起来
-                videoBg.setVisibility(View.VISIBLE);
-                videoBg.start(); 
-                staticImg.setVisibility(View.GONE);
+                videoBg.start();     // 开始播放
             }
         });
-        // 将视频铺满全屏
         overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
+
+        // 2. 【顶层】再放静态图，盖住视频初始的黑屏
+        android.widget.ImageView staticImg = new android.widget.ImageView(this);
+        staticImg.setImageResource(R.drawable.splash_bg);
+        staticImg.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+        overlay.addView(staticImg, new FrameLayout.LayoutParams(-1, -1));
+
+        // 【监听视频第一帧渲染】一旦出画面，立刻撤掉静态图
+        videoBg.setOnInfoListener(new android.media.MediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(android.media.MediaPlayer mp, int what, int extra) {
+                if (what == android.media.MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                    staticImg.setVisibility(View.GONE);
+                }
+                return true;
+            }
+        });
+        
+        // 【老设备兜底】如果电视太老不回调上面的通知，800毫秒后强制撤掉静态图
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (staticImg.getVisibility() == View.VISIBLE) {
+                staticImg.setVisibility(View.GONE);
+            }
+        }, 800);
 
         // 3. 科技蓝细线条滚动效果
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
@@ -387,7 +400,7 @@ public class HomeActivity extends BaseActivity {
         getWindow().addContentView(overlay, new ViewGroup.LayoutParams(-1, -1));
         mySplashOverlay = overlay;
 
-        // 安全防卡死机制：最长显示 15 秒，15 秒后就算源没加载出来也强行消失
+        // 安全防卡死机制：最长显示 15 秒
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             hideSplashOverlay();
         }, 15000);
@@ -398,26 +411,35 @@ public class HomeActivity extends BaseActivity {
         if (isOverlayHidden || mySplashOverlay == null) return;
         isOverlayHidden = true;
         
-        // 【核心】遍历并停止视频播放，释放资源
-        if (mySplashOverlay instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup) mySplashOverlay;
-            for (int i = 0; i < group.getChildCount(); i++) {
-                View child = group.getChildAt(i);
-                if (child instanceof android.widget.VideoView) {
-                    ((android.widget.VideoView) child).stopPlayback();
-                }
-            }
+        // 记录一下启动时间，判断是否展示太短
+        long showDuration = System.currentTimeMillis() - overlayStartTime;
+        long delay = 0;
+        if (showDuration < 3000) {
+            delay = 3000 - showDuration; // 如果不到3秒，就等剩下的时间
         }
 
-        mySplashOverlay.animate()
-                .alpha(0f)
-                .setDuration(600)
-                .withEndAction(() -> {
-                    if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
-                        ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            // 遍历并停止视频播放，释放资源
+            if (mySplashOverlay instanceof ViewGroup) {
+                ViewGroup group = (ViewGroup) mySplashOverlay;
+                for (int i = 0; i < group.getChildCount(); i++) {
+                    View child = group.getChildAt(i);
+                    if (child instanceof android.widget.VideoView) {
+                        ((android.widget.VideoView) child).stopPlayback();
                     }
-                    mySplashOverlay = null;
-                }).start();
+                }
+            }
+
+            mySplashOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(600)
+                    .withEndAction(() -> {
+                        if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
+                            ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
+                        }
+                        mySplashOverlay = null;
+                    }).start();
+        }, delay);
     }
     // ====================================================================
 
