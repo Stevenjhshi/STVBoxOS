@@ -3004,7 +3004,7 @@ public class PlayFragment extends BaseLazyFragment {
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         // settings.setUserAgentString(ANDROID_UA);
 
-        webView.setBackgroundColor(Color.BLACK);
+        webView.setBackgroundColor(Color.parseColor("#B3000000"));
         webView.setUIClient(new XWalkUIClient(webView) {
             @Override
             public boolean onConsoleMessage(XWalkView view, String message, int lineNumber, String sourceId, ConsoleMessageType messageType) {
