@@ -114,7 +114,6 @@ public class HomeActivity extends BaseActivity {
     // ================= 【自定义启动遮罩层相关】 =================
     private View mySplashOverlay = null;
     private boolean isOverlayHidden = false;
-    private long overlayStartTime = 0; // 记录启动时间
     // ===============================================================
 
     private final Runnable mRunnable = new Runnable() {
@@ -327,22 +326,15 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
-    // ================= 【核心方法：动态构建你的视频启动遮罩层】 =================
+    // ================= 【核心方法：极简视频遮罩层】 =================
     private void initSplashOverlay() {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
-        overlayStartTime = System.currentTimeMillis();
 
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.BLACK);
 
-        // 1. 【底层垫图】永远放在最下面，作为防弹衣，绝对不隐藏它
-        android.widget.ImageView staticImg = new android.widget.ImageView(this);
-        staticImg.setImageResource(R.drawable.splash_bg);
-        staticImg.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
-        overlay.addView(staticImg, new FrameLayout.LayoutParams(-1, -1));
-
-        // 2. 【中层】视频盖在静态图上面
+        // 1. 视频背景
         android.widget.VideoView videoBg = new android.widget.VideoView(this);
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         videoBg.setVideoURI(android.net.Uri.parse(videoPath));
@@ -350,81 +342,65 @@ public class HomeActivity extends BaseActivity {
         videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
-                mp.setLooping(true); // 恢复循环，底下的垫图会兜住所有黑帧
+                mp.setLooping(true); // 循环播放
                 mp.setVolume(0, 0);  // 强制静音
                 videoBg.start();     // 开始播放
             }
         });
         overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
 
-        // 3. 【顶层】科技蓝细线条滚动效果
+        // 2. 科技蓝细线条滚动效果
         ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         pb.setIndeterminate(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             pb.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor("#1890FF"))); 
         }
-        // 【核心修改】强行把进度条的层级拔高，防止被 SurfaceView 盖住
-        pb.setElevation(100f); 
         FrameLayout.LayoutParams pbLp = new FrameLayout.LayoutParams(AutoSizeUtils.mm2px(this, 350), AutoSizeUtils.mm2px(this, 4));
         pbLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         pbLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
         overlay.addView(pb, pbLp);
 
-        // 4. 【顶层】数据加载中提示
+        // 3. 数据加载中提示
         TextView tvLoad = new TextView(this);
         tvLoad.setText("数据加载中...");
         tvLoad.setTextColor(Color.parseColor("#1890FF"));
         tvLoad.setTextSize(18);
-        // 【核心修改】强行把文字的层级拔高，防止被 SurfaceView 盖住
-        tvLoad.setElevation(100f);
         FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
         tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 110);
         overlay.addView(tvLoad, tvLp);
 
-        // 强行盖在最顶层
         getWindow().addContentView(overlay, new ViewGroup.LayoutParams(-1, -1));
         mySplashOverlay = overlay;
 
-        // 安全防卡死机制：最长显示 15 秒
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             hideSplashOverlay();
         }, 15000);
     }
 
-    // ================= 【核心方法：数据加载成功后，让遮罩层淡出消失】 =================
+    // ================= 【核心方法：安全淡出遮罩层】 =================
     private void hideSplashOverlay() {
         if (isOverlayHidden || mySplashOverlay == null) return;
         isOverlayHidden = true;
         
-        long showDuration = System.currentTimeMillis() - overlayStartTime;
-        long delay = 0;
-        if (showDuration < 3000) {
-            delay = 3000 - showDuration; 
-        }
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // 直接让整个遮罩层淡出
-            mySplashOverlay.animate()
-                    .alpha(0f)
-                    .setDuration(600)
-                    .withEndAction(() -> {
-                        // 淡出结束后，再去停止视频并移除 View
-                        if (mySplashOverlay instanceof ViewGroup) {
-                            ViewGroup group = (ViewGroup) mySplashOverlay;
-                            for (int i = 0; i < group.getChildCount(); i++) {
-                                View child = group.getChildAt(i);
-                                if (child instanceof android.widget.VideoView) {
-                                    ((android.widget.VideoView) child).stopPlayback();
-                                }
+        mySplashOverlay.animate()
+                .alpha(0f)
+                .setDuration(600)
+                .withEndAction(() -> {
+                    if (mySplashOverlay instanceof ViewGroup) {
+                        ViewGroup group = (ViewGroup) mySplashOverlay;
+                        for (int i = 0; i < group.getChildCount(); i++) {
+                            View child = group.getChildAt(i);
+                            if (child instanceof android.widget.VideoView) {
+                                ((android.widget.VideoView) child).stopPlayback();
                             }
                         }
-                        if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
-                            ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
-                        }
-                        mySplashOverlay = null;
-                    }).start();
-        }, delay);
+                    }
+                    if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
+                        ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
+                    }
+                    mySplashOverlay = null;
+                }).start();
     }
     // ====================================================================
 
@@ -464,7 +440,6 @@ public class HomeActivity extends BaseActivity {
                 previousHomeName = null;
                 previousHomeSource = null;
 
-                // ================= 【触发点：源终于加载完了，让遮罩层消失】 =================
                 hideSplashOverlay();
             }
         });
@@ -575,7 +550,6 @@ public class HomeActivity extends BaseActivity {
                         if (isActivityUnavailable()) {
                             return;
                         }
-                        // 如果配置加载报错，直接让遮罩层消失，避免卡死
                         hideSplashOverlay();
 
                         if (mConfigErrorDialog == null)
