@@ -1421,6 +1421,16 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1" />
 
+                        <!-- 【新增】显示动态版本号 -->
+                        <TextView
+                            android:id="@+id/tvAppVersion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/vs_10"
+                            android:layout_marginRight="@dimen/vs_10"
+                            android:textColor="#BBFFFFFF"
+                            android:textSize="@dimen/ts_24" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
