@@ -43,6 +43,29 @@ jobs:
           echo "签名文件已在仓库中，直接使用！"
         fi
 
+    # =========================================================
+    # 【神技】抓取提交说明，并同时生成 txt 文档
+    # =========================================================
+    - name: Generate Changelog
+      run: |
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        if [ -n "$PREVIOUS_TAG" ]; then
+          LOG=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s" --no-merges | grep -v "Auto bump version" | grep -v "Add fixed release keystore" || echo "- 优化细节与性能调整")
+        else
+          LOG="- 初始版本发布"
+        fi
+        
+        # 存入环境变量，用于网页显示
+        echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+        echo "🎉 **STVBox 更新内容**" >> $GITHUB_ENV
+        echo "$LOG" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        
+        # 【新增】生成一个 txt 文本文件，方便下载
+        echo "STVBox 更新说明" > ReleaseNote.txt
+        echo "====================" >> ReleaseNote.txt
+        echo "$LOG" >> ReleaseNote.txt
+
     - name: Bump Version Before Build
       run: |
         python3 << 'EOF'
@@ -85,10 +108,16 @@ jobs:
       with:
         tag_name: v${{ env.NEW_VERSION }}
         name: STVBox v${{ env.NEW_VERSION }}
-        files: app/build/outputs/apk/release/*.apk
+        # 👇【核心修改】把 txt 文档连同 apk 一起传上去
+        files: |
+          app/build/outputs/apk/release/*.apk
+          ReleaseNote.txt
         make_latest: true
-        # 👇【恢复自动抓取】让它自动罗列两个版本之间的提交说明
-        generate_release_notes: true
+        body: |
+          ${{ env.CHANGELOG }}
+          
+          ---
+          **安装提示**：请在电视盒子上直接覆盖安装，您的接口和配置数据将自动保留。
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
