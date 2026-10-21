@@ -29,9 +29,6 @@ jobs:
     - name: Create local.properties
       run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-    # =========================================================
-    # 【核心修复】只生成一次签名，并直接推到仓库永久保存！
-    # =========================================================
     - name: Ensure Fixed Keystore
       run: |
         if [ ! -f app/release.keystore ]; then
@@ -46,7 +43,6 @@ jobs:
           echo "签名文件已在仓库中，直接使用！"
         fi
 
-    # 打包前先升级版本号
     - name: Bump Version Before Build
       run: |
         python3 << 'EOF'
@@ -90,8 +86,9 @@ jobs:
         tag_name: v${{ env.NEW_VERSION }}
         name: STVBox v${{ env.NEW_VERSION }}
         files: app/build/outputs/apk/release/*.apk
-        make_latest: true # 强制让每次发布的新版本都坐上“最新”的release清单
-        generate_release_notes: true # 【新增】自动对比上一次提交，生成更新说明（What's Changed）
+        make_latest: true
+        # 👇【恢复自动抓取】让它自动罗列两个版本之间的提交说明
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
