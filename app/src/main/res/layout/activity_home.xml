@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#121212"> <!-- 【深邃黑】 -->
 
     <!-- ================= 主界面布局（藏在启动页下面） ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -90,7 +90,7 @@
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000">
+        android:background="#121212"> <!-- 【深邃黑】 -->
 
         <ImageView
             android:id="@+id/splash_static_img"
@@ -104,7 +104,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- 进度条（你可以在代码里用之前的流光，或者用系统原生的，我这里用系统的以防止代码太长，你若想用纯代码流光，直接在 HomeActivity 里绑定这个 FrameLayout 即可） -->
         <ProgressBar
             android:id="@+id/splash_progress"
             android:layout_width="350mm"
