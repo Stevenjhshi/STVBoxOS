@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_6200EE">#000000</color>
-    <color name="color_3700B3">#000000</color>
+    <!-- 深邃黑全局主色 -->
+    <color name="color_6200EE">#121212</color>
+    <color name="color_3700B3">#121212</color>
     <color name="color_03DAC5">#03DAC5</color>
     <color name="title_fouse_n">#ffce7900</color>
     <color name="color_1890FF">#1890FF</color>
@@ -15,14 +16,15 @@
     <color name="color_00796B">#00796B</color>
     <color name="color_FFB6C1">#FFB6C1</color>
     
-    <!-- ================= 核心背景色大换血 (40%不透明度) ================= -->
-    <color name="color_3D3D3D">#66000000</color>
-    <color name="color_32364E">#66000000</color>
-    <color name="color_6632364E">#66000000</color>
-    <color name="color_353744">#66000000</color>
-    <color name="color_CC353744">#66000000</color>
-    <color name="color_6C3D3D3D">#66000000</color>
-    <color name="color_59353744">#66000000</color>
+    <!-- ================= 核心背景色改为深邃黑 (半透明) ================= -->
+    <!-- 之前是 #66000000，现在改为带透明度的深邃黑 #66121212 -->
+    <color name="color_3D3D3D">#66121212</color>
+    <color name="color_32364E">#66121212</color>
+    <color name="color_6632364E">#66121212</color>
+    <color name="color_353744">#66121212</color>
+    <color name="color_CC353744">#66121212</color>
+    <color name="color_6C3D3D3D">#66121212</color>
+    <color name="color_59353744">#66121212</color>
     <!-- ================================================================== -->
 
     <color name="color_CCFFFFFF">#BBFFFFFF</color>
@@ -41,13 +43,13 @@
     <color name="color_80FF0057">#66FF0057</color>
     <color name="color_000000_60">#99000000</color>
     
-    <!-- 全局滚动背景改为半透明 -->
-    <color name="color_scrollview_bg">#66000000</color>
+    <!-- 全局滚动背景改为半透明深邃黑 -->
+    <color name="color_scrollview_bg">#66121212</color>
     <color name="color_text_primary">#FFFFFAE0</color>
 
-    <!-- 弹窗和面板背景改为半透明 -->
-    <color name="color_dialog_bg">#66000000</color> 
-    <color name="dialog_panel_bg">#66000000</color> 
+    <!-- 弹窗和面板背景改为半透明深邃黑 -->
+    <color name="color_dialog_bg">#66121212</color> 
+    <color name="dialog_panel_bg">#66121212</color> 
     
     <color name="dialog_panel_stroke">#33FFFFFF</color>
     <color name="dialog_control_bg">#80353535</color>
