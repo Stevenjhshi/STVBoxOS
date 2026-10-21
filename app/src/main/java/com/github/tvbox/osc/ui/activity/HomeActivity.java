@@ -181,7 +181,7 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
-        // 【核心修复】强行把整个底层窗口和根布局涂成纯黑，干掉暗淡杂乱的背景
+        // 【核心修改1】强行把根视图刷纯黑，干掉暗淡背景
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         findViewById(android.R.id.content).setBackgroundColor(Color.BLACK);
 
@@ -336,7 +336,7 @@ public class HomeActivity extends BaseActivity {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
 
-        // 【核心修复】不要设置黑色背景！让它透明，这样视频循环时哪怕黑帧漏出来，也能透出底下的黑底，而不是一个突兀的黑块
+        // 【核心修改2】透明背景，干掉循环时的黑色方框
         FrameLayout overlay = new FrameLayout(this);
         overlay.setBackgroundColor(Color.TRANSPARENT);
 
