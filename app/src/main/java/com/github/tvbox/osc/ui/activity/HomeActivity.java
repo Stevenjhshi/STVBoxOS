@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
@@ -29,6 +28,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -116,8 +116,13 @@ public class HomeActivity extends BaseActivity {
     private long mExitTime = 0;
     private boolean eventBusRegistered = false;
 
-    private View mySplashOverlay = null;
+    // ================= 【原生启动页控制】 =================
+    private View mSplashContainer;
+    private View mMainContentLayout;
+    private android.widget.VideoView mSplashVideo;
+    private ImageView mSplashImg;
     private boolean isOverlayHidden = false;
+    // =======================================================
 
     private final Runnable mRunnable = new Runnable() {
         @SuppressLint("SetTextI18n")
@@ -181,10 +186,6 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
-        // 【核心修改1】强行把根视图刷纯黑，干掉暗淡背景
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-        findViewById(android.R.id.content).setBackgroundColor(Color.BLACK);
-
         this.topLayout = findViewById(R.id.topLayout);
         this.tvDate = findViewById(R.id.tvDate);
         this.tvName = findViewById(R.id.tvName);
@@ -192,6 +193,10 @@ public class HomeActivity extends BaseActivity {
         this.mGridView = findViewById(R.id.mGridView);
         this.mViewPager = findViewById(R.id.mViewPager);
 
+        // 获取 XML 中的启动页和主界面
+        this.mSplashContainer = findViewById(R.id.splash_container);
+        this.mMainContentLayout = findViewById(R.id.main_content_layout);
+        
         initSplashOverlay();
 
         this.sortAdapter = new SortAdapter();
@@ -332,28 +337,35 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
+    // 初始化视频
     private void initSplashOverlay() {
-        if (mySplashOverlay != null) return;
-        isOverlayHidden = false;
+        if (mSplashContainer == null) return;
+        mSplashVideo = mSplashContainer.findViewById(R.id.splash_video_view);
+        mSplashImg = mSplashContainer.findViewById(R.id.splash_static_img);
 
-        // 【核心修改2】透明背景，干掉循环时的黑色方框
-        FrameLayout overlay = new FrameLayout(this);
-        overlay.setBackgroundColor(Color.TRANSPARENT);
-
-        android.widget.VideoView videoBg = new android.widget.VideoView(this);
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
-        videoBg.setVideoURI(android.net.Uri.parse(videoPath));
-        
-        videoBg.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
+        mSplashVideo.setVideoURI(android.net.Uri.parse(videoPath));
+
+        mSplashVideo.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
-                mp.setLooping(true);
+                mp.setLooping(true); // 恢复循环（放在底层绝不出黑框）
                 mp.setVolume(0, 0);
-                videoBg.start();
+                mSplashVideo.start();
+                mSplashImg.setVisibility(View.GONE); // 视频准备好，藏起静态图
             }
         });
-        overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
 
+        // 视频播完隐藏视频防穿透
+        mSplashVideo.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(android.media.MediaPlayer mp) {
+                mSplashVideo.setVisibility(View.GONE);
+            }
+        });
+        
+        // 动态注入赛博朋克流光线（保持你的高级感）
+        FrameLayout splashContainer = (FrameLayout) mSplashContainer;
         int barWidth = AutoSizeUtils.mm2px(this, 350);
         int barHeight = AutoSizeUtils.mm2px(this, 3); 
 
@@ -391,47 +403,36 @@ public class HomeActivity extends BaseActivity {
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.start();
 
-        overlay.addView(progressContainer);
+        // 找到 XML 里那个 ProgressBar 的位置，把流光线盖上去，原来的隐藏掉
+        View defaultPb = splashContainer.findViewById(R.id.splash_progress);
+        if (defaultPb != null) defaultPb.setVisibility(View.GONE);
 
-        TextView tvLoad = new TextView(this);
-        tvLoad.setText("数据加载中...");
-        tvLoad.setTextColor(Color.parseColor("#00E5FF")); 
-        tvLoad.setTextSize(14); 
-        tvLoad.setLetterSpacing(0.1f); 
-        FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
-        tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 120); 
-        overlay.addView(tvLoad, tvLp);
-
-        getWindow().addContentView(overlay, new ViewGroup.LayoutParams(-1, -1));
-        mySplashOverlay = overlay;
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            hideSplashOverlay();
-        }, 15000);
+        splashContainer.addView(progressContainer);
     }
 
+    // 隐藏启动页
     private void hideSplashOverlay() {
-        if (isOverlayHidden || mySplashOverlay == null) return;
+        if (isOverlayHidden || mSplashContainer == null) return;
         isOverlayHidden = true;
-        
-        mySplashOverlay.animate()
+
+        // 先让主界面显示出来（让它排在启动页下面）
+        if (mMainContentLayout != null) {
+            mMainContentLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (mSplashVideo != null) {
+            mSplashVideo.stopPlayback();
+        }
+
+        // 优雅淡出启动页
+        mSplashContainer.animate()
                 .alpha(0f)
-                .setDuration(600)
-                .withEndAction(() -> {
-                    if (mySplashOverlay instanceof ViewGroup) {
-                        ViewGroup group = (ViewGroup) mySplashOverlay;
-                        for (int i = 0; i < group.getChildCount(); i++) {
-                            View child = group.getChildAt(i);
-                            if (child instanceof android.widget.VideoView) {
-                                ((android.widget.VideoView) child).stopPlayback();
-                            }
-                        }
+                .setDuration(500)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSplashContainer.setVisibility(View.GONE);
                     }
-                    if (mySplashOverlay != null && mySplashOverlay.getParent() != null) {
-                        ((ViewGroup) mySplashOverlay.getParent()).removeView(mySplashOverlay);
-                    }
-                    mySplashOverlay = null;
                 }).start();
     }
 
