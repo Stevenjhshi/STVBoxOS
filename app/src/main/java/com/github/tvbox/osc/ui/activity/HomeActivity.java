@@ -5,10 +5,15 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.IntEvaluator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,13 +23,13 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -326,7 +331,7 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
-    // ================= 【核心方法：极简视频遮罩层（回归最初版本）】 =================
+    // ================= 【核心方法：极简视频遮罩层 + 赛博朋克霓虹流光】 =================
     private void initSplashOverlay() {
         if (mySplashOverlay != null) return;
         isOverlayHidden = false;
@@ -349,25 +354,62 @@ public class HomeActivity extends BaseActivity {
         });
         overlay.addView(videoBg, new FrameLayout.LayoutParams(-1, -1));
 
-        // 2. 科技蓝细线条滚动效果
-        ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        pb.setIndeterminate(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            pb.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor("#1890FF"))); 
-        }
-        FrameLayout.LayoutParams pbLp = new FrameLayout.LayoutParams(AutoSizeUtils.mm2px(this, 350), AutoSizeUtils.mm2px(this, 4));
-        pbLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        pbLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
-        overlay.addView(pb, pbLp);
+        // ================= 【全新升级：赛博朋克霓虹流光进度条】 =================
+        int barWidth = AutoSizeUtils.mm2px(this, 350);
+        int barHeight = AutoSizeUtils.mm2px(this, 3); // 极细的线
 
-        // 3. 数据加载中提示
+        // 容器，用于限制光晕滑动的范围
+        FrameLayout progressContainer = new FrameLayout(this);
+        FrameLayout.LayoutParams containerLp = new FrameLayout.LayoutParams(barWidth, barHeight);
+        containerLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        containerLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
+        progressContainer.setLayoutParams(containerLp);
+
+        // A. 底部半透明的底轨
+        View baseLine = new View(this);
+        baseLine.setBackgroundColor(Color.parseColor("#3300A2FF")); // 20%透明度的科技蓝
+        progressContainer.addView(baseLine, new FrameLayout.LayoutParams(-1, -1));
+
+        // B. 中间扫过的流光 (使用渐变 Shader)
+        View shimmerView = new View(this);
+        // 流光宽度大约是底轨的一半
+        int shimmerWidth = barWidth / 2;
+        FrameLayout.LayoutParams shimmerLp = new FrameLayout.LayoutParams(shimmerWidth, -1);
+        shimmerView.setLayoutParams(shimmerLp);
+        
+        // 创建渐变：透明 -> 纯白蓝 -> 透明
+        LinearGradient gradient = new LinearGradient(
+                0, 0, shimmerWidth, 0,
+                new int[]{Color.TRANSPARENT, Color.parseColor("#00E5FF"), Color.WHITE, Color.parseColor("#00E5FF"), Color.TRANSPARENT},
+                null,
+                Shader.TileMode.CLAMP
+        );
+        ShapeDrawable shapeDrawable = new ShapeDrawable(new RectShape());
+        shapeDrawable.getPaint().setShader(gradient);
+        shimmerView.setBackground(shapeDrawable);
+
+        progressContainer.addView(shimmerView);
+
+        // C. 给流光加上平滑的左右往返动画
+        ObjectAnimator animator = ObjectAnimator.ofFloat(shimmerView, "translationX", 0f, (float)(barWidth - shimmerWidth));
+        animator.setDuration(1500); // 1.5秒扫过一次
+        animator.setInterpolator(new AccelerateDecelerateInterpolator()); // 两头慢，中间快的丝滑曲线
+        animator.setRepeatMode(ValueAnimator.REVERSE); // 扫过去再扫回来
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.start();
+
+        overlay.addView(progressContainer);
+        // ========================================================================
+
+        // 3. 数据加载中提示 (稍微调小了字号，配合极细的线条显得更高级)
         TextView tvLoad = new TextView(this);
         tvLoad.setText("数据加载中...");
-        tvLoad.setTextColor(Color.parseColor("#1890FF"));
-        tvLoad.setTextSize(18);
+        tvLoad.setTextColor(Color.parseColor("#00E5FF")); // 改成更亮眼的霓虹蓝
+        tvLoad.setTextSize(14); // 字号调小
+        tvLoad.setLetterSpacing(0.1f); // 字间距拉开，更有高级感
         FrameLayout.LayoutParams tvLp = new FrameLayout.LayoutParams(-2, -2);
         tvLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 110);
+        tvLp.bottomMargin = AutoSizeUtils.mm2px(this, 120); // 往上挪一点，别贴着线条
         overlay.addView(tvLoad, tvLp);
 
         getWindow().addContentView(overlay, new ViewGroup.LayoutParams(-1, -1));
