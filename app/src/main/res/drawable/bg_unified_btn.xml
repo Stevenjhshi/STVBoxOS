@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 遥控器选中时的状态：科技蓝背景 -->
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#FF1976D2" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <!-- 普通状态：深邃暗灰底，不透底 -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FF2A2A35" /> <!-- 略带蓝紫调的深灰，融入背景 -->
+            <corners android:radius="8dp" />
+            <stroke android:width="1dp" android:color="#33FFFFFF" />
+        </shape>
+    </item>
+</selector>
