@@ -27,6 +27,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -342,20 +343,26 @@ public class HomeActivity extends BaseActivity {
         mSplashVideo = mSplashContainer.findViewById(R.id.splash_video_view);
         mSplashImg = mSplashContainer.findViewById(R.id.splash_static_img);
 
+        // 【核心修复1】强行让 ImageView 使用 fitXY 拉伸铺满，彻底防止缩放跳跃
+        mSplashImg.setScaleType(ImageView.ScaleType.FIT_XY);
+
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         mSplashVideo.setVideoURI(android.net.Uri.parse(videoPath));
 
         mSplashVideo.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(android.media.MediaPlayer mp) {
-                mp.setLooping(false); // 不循环
+                mp.setLooping(false); 
                 mp.setVolume(0, 0);
+                
+                // 【核心修复2】强制 VideoView 裁剪铺满全屏，和 ImageView 的渲染比例100%对齐
+                mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
+                
                 mSplashVideo.start();
-                // 【核心修复】移除了隐藏静态图的代码，静态图永远在最底层垫着
             }
         });
 
-        // 视频播完后，直接干掉视频层，底下的静态图自然露出来，0 掉帧
+        // 视频播完后，直接干掉视频层，底下的静态图自然露出来
         mSplashVideo.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(android.media.MediaPlayer mp) {
@@ -363,7 +370,7 @@ public class HomeActivity extends BaseActivity {
             }
         });
         
-        // 动态注入赛博朋克流光线（保持你的高级感）
+        // 动态注入赛博朋克流光线（单向从左到右的跑马灯）
         FrameLayout splashContainer = (FrameLayout) mSplashContainer;
         int barWidth = AutoSizeUtils.mm2px(this, 350);
         int barHeight = AutoSizeUtils.mm2px(this, 3); 
@@ -395,10 +402,11 @@ public class HomeActivity extends BaseActivity {
 
         progressContainer.addView(shimmerView);
 
-        ObjectAnimator animator = ObjectAnimator.ofFloat(shimmerView, "translationX", 0f, (float)(barWidth - shimmerWidth));
-        animator.setDuration(1500); 
-        animator.setInterpolator(new AccelerateDecelerateInterpolator()); 
-        animator.setRepeatMode(ValueAnimator.REVERSE); 
+        // 【核心修复3】单向动画，从最左边冲入，最右边冲出
+        ObjectAnimator animator = ObjectAnimator.ofFloat(shimmerView, "translationX", -shimmerWidth, (float)barWidth);
+        animator.setDuration(1200); 
+        animator.setInterpolator(new LinearInterpolator()); 
+        animator.setRepeatMode(ValueAnimator.RESTART); 
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.start();
 
