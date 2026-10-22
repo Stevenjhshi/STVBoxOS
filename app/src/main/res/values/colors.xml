@@ -11,7 +11,7 @@
     <color name="color_CBF46A">#CBF46A</color>
     <color name="color_FF90CA09">#90CA09</color>
     <color name="color_BD0CADE2">#BD0CADE2</color>
-    <color name="color_FF0057">#FF0057</color>
+    <color name="color_FF0057">#1890FF</color>
     <color name="color_FF5F00">#FF5F00</color>
     <color name="color_00796B">#00796B</color>
     <color name="color_FFB6C1">#FFB6C1</color>
@@ -40,7 +40,7 @@
     <color name="color_FFFFFF">#ffffffff</color>
     <color name="color_33FFFFFF">#33ffffff</color>
     <color name="color_99FFFFFF">#4D000000</color>
-    <color name="color_80FF0057">#66FF0057</color>
+    <color name="color_80FF0057">#661890FF</color>
     <color name="color_000000_60">#99000000</color>
     
     <!-- 全局滚动背景改为半透明深邃黑 -->
