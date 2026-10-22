@@ -56,10 +56,14 @@
         <activity
             android:name=".ui.activity.PushActivity"
             android:screenOrientation="sensorLandscape" />
+            
+        <!-- 【修改2】强制给 SearchActivity 加上不透明背景 -->
         <activity
             android:name=".ui.activity.SearchActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="sensorLandscape"
+            android:windowBackground="#F21A1A20" />
+            
         <activity
             android:name=".ui.activity.FastSearchActivity"
             android:screenOrientation="sensorLandscape" />
