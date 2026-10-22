@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog; // 新增导入
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.github.tvbox.osc.R;
@@ -808,6 +809,25 @@ public class ModelSettingFragment extends BaseLazyFragment {
         findViewById(R.id.llIjkCachePlay).setOnClickListener((view -> onClickIjkCachePlay(view)));
         findViewById(R.id.llClearCache).setOnClickListener((view -> onClickClearCache(view)));
 
+        // ================= 【新增】重置App 点击事件 =================
+        findViewById(R.id.llResetApp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FastClickCheckUtil.check(v);
+                new AlertDialog.Builder(mActivity)
+                        .setTitle("重置App")
+                        .setMessage("确定要恢复默认设置吗？\n\n此操作将清除所有自定义配置并重启App，请谨慎操作！")
+                        .setPositiveButton("确定重置", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                performResetApp();
+                            }
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+            }
+        });
+
         // ================= 【新增】动态读取并显示版本号 =================
         try {
             TextView tvAppVersion = findViewById(R.id.tvAppVersion);
@@ -820,6 +840,28 @@ public class ModelSettingFragment extends BaseLazyFragment {
             e.printStackTrace();
         }
         // ============================================================
+    }
+
+    /**
+     * 【新增】执行重置逻辑
+     */
+    private void performResetApp() {
+        try {
+            // 清空所有 Hawk 存储的数据
+            Hawk.deleteAll();
+            Toast.makeText(mContext, "已恢复默认设置，即将重启App...", Toast.LENGTH_SHORT).show();
+            
+            // 延迟一下让Toast显示，然后调用现有的重启方法
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    restartApp();
+                }
+            }, 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "重置失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void restartAppAfterConfigChanged() {
