@@ -1,6 +1,8 @@
 package com.github.tvbox.osc.ui.dialog;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +23,12 @@ public class RemoteDialog extends BaseDialog {
     public RemoteDialog(@NonNull @NotNull Context context) {
         super(context);
         setContentView(R.layout.dialog_remote);
+        
+        // 【关键修改】强制设置系统窗口背景为深色，防止底层界面透出
+        if (getWindow() != null) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F21A1A20")));
+        }
+        
         setCanceledOnTouchOutside(false);
         ivQRCode = findViewById(R.id.ivQRCode);
         tvAddress = findViewById(R.id.tvAddress);
