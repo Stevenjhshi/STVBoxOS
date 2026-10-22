@@ -188,13 +188,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <!-- 修改了 background 为统一的 bg_unified_btn -->
                     <TextView
                         android:id="@+id/tvPlay"
                         android:layout_width="@dimen/vs_120"
                         android:layout_height="@dimen/vs_40"
                         android:layout_marginEnd="@dimen/vs_10"
                         android:layout_marginRight="@dimen/vs_10"
-                        android:background="@drawable/button_detail_play"
+                        android:background="@drawable/bg_unified_btn"
                         android:focusable="true"
                         android:nextFocusUp="@id/previewPlayerBlock"
                         android:gravity="center"
@@ -202,50 +203,54 @@
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/vs_20" />
 
+                    <!-- 修改了 background 为统一的 bg_unified_btn -->
                     <TextView
                         android:id="@+id/tvQuickSearch"
                         android:layout_width="@dimen/vs_120"
                         android:layout_height="@dimen/vs_40"
                         android:layout_marginEnd="@dimen/vs_10"
                         android:layout_marginRight="@dimen/vs_10"
-                        android:background="@drawable/button_detail_quick_search"
+                        android:background="@drawable/bg_unified_btn"
                         android:focusable="true"
                         android:gravity="center"
                         android:text="快速搜索"
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/vs_20" />
 
+                    <!-- 修改了 background 为统一的 bg_unified_btn -->
                     <TextView
                         android:id="@+id/tvDesc"
                         android:layout_width="@dimen/vs_120"
                         android:layout_height="@dimen/vs_40"
                         android:layout_marginEnd="@dimen/vs_10"
                         android:layout_marginRight="@dimen/vs_10"
-                        android:background="@drawable/button_detail_sort"
+                        android:background="@drawable/bg_unified_btn"
                         android:focusable="true"
                         android:gravity="center"
                         android:text="简介"
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/vs_20" />
 
+                    <!-- 修改了 background 为统一的 bg_unified_btn -->
                     <TextView
                         android:id="@+id/tvCollect"
                         android:layout_width="@dimen/vs_120"
                         android:layout_height="@dimen/vs_40"
                         android:layout_marginEnd="@dimen/vs_10"
                         android:layout_marginRight="@dimen/vs_10"
-                        android:background="@drawable/button_detail_collect"
+                        android:background="@drawable/bg_unified_btn"
                         android:focusable="true"
                         android:gravity="center"
                         android:text="加入收藏"
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/vs_20" />
 
+                    <!-- 修改了 background 为统一的 bg_unified_btn -->
                     <TextView
                         android:id="@+id/tvChangeSource"
                         android:layout_width="@dimen/vs_120"
                         android:layout_height="@dimen/vs_40"
-                        android:background="@drawable/button_detail_change_source"
+                        android:background="@drawable/bg_unified_btn"
                         android:focusable="true"
                         android:gravity="center"
                         android:text="切源"
