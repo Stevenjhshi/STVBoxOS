@@ -2,15 +2,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/vs_600"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_dialog_rounded"
+    android:background="#EE1E1E24"
     android:elevation="5dp"
     android:padding="@dimen/vs_10">
 
+    <!-- 使用 background="#00000000" 保持原样，或者删掉此属性 -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxHeight="@dimen/vs_400"
-        android:background="@drawable/bg_scrollview"
         android:fillViewport="true"
         android:scrollbarStyle="insideOverlay"
         android:fadeScrollbars="true">
