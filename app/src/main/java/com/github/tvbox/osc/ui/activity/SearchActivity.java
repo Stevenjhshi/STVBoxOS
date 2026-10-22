@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -134,8 +136,12 @@ public class SearchActivity extends BaseActivity {
 
     private static Boolean hasKeyBoard;
     private static Boolean isSearchBack;
+    
     @Override
     protected void init() {
+        // 【关键修改】用代码强制给系统窗口涂上一层 95% 不透明的深色
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F21A1A20")));
+        
         initView();
         initViewModel();
         initData();
