@@ -24,11 +24,6 @@ import com.github.catvod.crawler.JsLoader;
 import me.jessyan.autosize.AutoSizeConfig;
 import me.jessyan.autosize.unit.Subunits;
 
-/**
- * @author pj567
- * @date :2020/12/17
- * @description:
- */
 public class App extends MultiDexApplication {
     private static App instance;
 
@@ -41,12 +36,9 @@ public class App extends MultiDexApplication {
         super.onCreate();
         instance = this;
         initParams();
-        // OKGo
-        OkGoHelper.init(); //台标获取
+        OkGoHelper.init(); 
         EpgUtil.init();
-        // 初始化Web服务器
         ControlManager.init(this);
-        //初始化数据库
         AppDataManager.init();
         LoadSir.beginBuilder()
                 .addCallback(new EmptyCallback())
@@ -62,7 +54,6 @@ public class App extends MultiDexApplication {
     }
 
     private void initParams() {
-        // Hawk
         Hawk.init(this).build();
         Hawk.put(HawkConfig.DEBUG_OPEN, false);
         Hawk.put(HawkConfig.PLAYER_IS_LIVE, false);
@@ -70,6 +61,11 @@ public class App extends MultiDexApplication {
             Hawk.put(HawkConfig.PLAY_TYPE, 2);
         } else if (Hawk.get(HawkConfig.PLAY_TYPE, 2) == 0) {
             Hawk.put(HawkConfig.PLAY_TYPE, 2);
+        }
+        
+        // 【核心修改】强制兜底，如果首次安装或缓存被清空，默认开启多行模式
+        if (!Hawk.contains(HawkConfig.HOME_REC_STYLE)) {
+            Hawk.put(HawkConfig.HOME_REC_STYLE, true);
         }
     }
 
@@ -82,7 +78,6 @@ public class App extends MultiDexApplication {
         super.onTerminate();
         JsLoader.destroy();
     }
-
 
     private VodInfo vodInfo;
     public void setVodInfo(VodInfo vodinfo){
