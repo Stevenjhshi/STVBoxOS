@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/tvName"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@drawable/button_danmu_setting"
+    android:background="@color/dialog_item_bg" 
     android:clickable="true"
     android:focusable="true"
     android:gravity="center"
