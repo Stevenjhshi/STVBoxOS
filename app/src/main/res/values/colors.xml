@@ -11,13 +11,13 @@
     <color name="color_CBF46A">#CBF46A</color>
     <color name="color_FF90CA09">#90CA09</color>
     <color name="color_BD0CADE2">#BD0CADE2</color>
+    <!-- 粉色全局替换为科技蓝 -->
     <color name="color_FF0057">#1890FF</color>
     <color name="color_FF5F00">#FF5F00</color>
     <color name="color_00796B">#00796B</color>
     <color name="color_FFB6C1">#FFB6C1</color>
     
     <!-- ================= 核心背景色改为深邃黑 (半透明) ================= -->
-    <!-- 之前是 #66000000，现在改为带透明度的深邃黑 #66121212 -->
     <color name="color_3D3D3D">#66121212</color>
     <color name="color_32364E">#66121212</color>
     <color name="color_6632364E">#66121212</color>
@@ -51,6 +51,9 @@
     <color name="color_dialog_bg">#66121212</color> 
     <color name="dialog_panel_bg">#66121212</color> 
     
+    <!-- 【核心新增】专用于弹窗内的小选项，93%不透明度的深邃黑，彻底挡住底下的卡片 -->
+    <color name="dialog_item_bg">#EE121212</color>
+
     <color name="dialog_panel_stroke">#33FFFFFF</color>
     <color name="dialog_control_bg">#80353535</color>
     <color name="dialog_control_bg_focused">#CC1890FF</color>
