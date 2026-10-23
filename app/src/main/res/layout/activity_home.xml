@@ -84,25 +84,20 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- 启动页盖在最顶层 -->
     <FrameLayout
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#121212">
 
-        <ImageView
-            android:id="@+id/splash_static_img"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/splash_bg" /> <!-- 注意：这里必须是 drawable，不是 raw -->
-
+        <!-- 静态图已经被彻底删除，直接上视频 -->
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- 【修改】marginBottom 从 150mm 改为 80mm，往下移 -->
+        <!-- 进度条已下移，避开 Logo -->
         <ProgressBar
             android:id="@+id/splash_progress"
             android:layout_width="350mm"
@@ -112,7 +107,6 @@
             android:indeterminate="true"
             android:indeterminateTint="#1890FF"/>
 
-        <!-- 【修改】marginBottom 从 110mm 改为 50mm，往下移 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
