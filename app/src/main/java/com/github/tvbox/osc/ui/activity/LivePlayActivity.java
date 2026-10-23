@@ -895,25 +895,20 @@ public class LivePlayActivity extends BaseActivity {
         Matcher cctvMatcher = Pattern.compile("(?i)^CCTV(\\d+)").matcher(cleanName);
         if (cctvMatcher.find()) {
             String num = cctvMatcher.group(1);
-            return "http://183.207.248.98:8080/pic/CCTV/CCTV" + num + ".png";
+            // 换成 Gitee 图床
+            return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV" + num + ".png";
         }
-        if (cleanName.contains("CCTV5+")) return "http://183.207.248.98:8080/pic/CCTV/CCTV5+.png";
-        if (cleanName.contains("CCTV4K")) return "http://183.207.248.98:8080/pic/CCTV/CCTV4k.png";
+        if (cleanName.contains("CCTV5+")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV5+.png";
+        if (cleanName.contains("CCTV4K")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV4K.png";
 
-        if (cleanName.contains("湖南")) return "http://183.207.248.98:8080/pic/ws/hunan.png";
-        if (cleanName.contains("浙江")) return "http://183.207.248.98:8080/pic/ws/zhejiang.png";
-        if (cleanName.contains("江苏")) return "http://183.207.248.98:8080/pic/ws/jiangsu.png";
-        if (cleanName.contains("北京")) return "http://183.207.248.98:8080/pic/ws/beijing.png";
-        if (cleanName.contains("东方") || cleanName.contains("上海")) return "http://183.207.248.98:8080/pic/ws/dongfang.png";
-        if (cleanName.contains("安徽")) return "http://183.207.248.98:8080/pic/ws/anhui.png";
-        if (cleanName.contains("广东")) return "http://183.207.248.98:8080/pic/ws/guangdong.png";
-        if (cleanName.contains("深圳")) return "http://183.207.248.98:8080/pic/ws/shenzhen.png";
-        if (cleanName.contains("山东")) return "http://183.207.248.98:8080/pic/ws/shandong.png";
-        if (cleanName.contains("天津")) return "http://183.207.248.98:8080/pic/ws/tianjin.png";
-        if (cleanName.contains("重庆")) return "http://183.207.248.98:8080/pic/ws/chongqing.png";
-        if (cleanName.contains("四川")) return "http://183.207.248.98:8080/pic/ws/sichuan.png";
-        if (cleanName.contains("湖北")) return "http://183.207.248.98:8080/pic/ws/hubei.png";
-        if (cleanName.contains("河南")) return "http://183.207.248.98:8080/pic/ws/henan.png";
+        if (cleanName.contains("湖南")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/湖南卫视.png";
+        if (cleanName.contains("浙江")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/浙江卫视.png";
+        if (cleanName.contains("江苏")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/江苏卫视.png";
+        if (cleanName.contains("北京")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/北京卫视.png";
+        if (cleanName.contains("东方") || cleanName.contains("上海")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/东方卫视.png";
+        if (cleanName.contains("安徽")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/安徽卫视.png";
+        if (cleanName.contains("广东")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/广东卫视.png";
+        if (cleanName.contains("深圳")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/深圳卫视.png";
         return null;
     }
 
@@ -933,30 +928,9 @@ public class LivePlayActivity extends BaseActivity {
         liveIconNullBg.setVisibility(View.INVISIBLE);
         liveIconNullText.setVisibility(View.INVISIBLE);
         imgLiveIcon.setVisibility(View.VISIBLE);
-        imgLiveIcon.setImageResource(R.drawable.app_icon);
-
-        final String finalUrl = logoUrl;
-        new Thread(() -> {
-            try {
-                java.net.URL url = new java.net.URL(finalUrl);
-                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(5000);
-                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-                conn.connect();
-                java.io.InputStream is = conn.getInputStream();
-                final android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(is);
-                is.close();
-
-                mHandler.post(() -> {
-                    if (bitmap != null && channel_Name != null && channel_Name.getChannelName().equals(channelName)) {
-                        imgLiveIcon.setImageBitmap(bitmap);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
+        
+        // 使用项目自带的 ImgUtil 加载 HTTPS 图片
+        com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.CENTER_INSIDE);
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -986,7 +960,6 @@ public class LivePlayActivity extends BaseActivity {
         divLoadEpg.setVisibility(View.VISIBLE);
         focusCurrentChannelInMenu();
     }
-
 
     @Override
     public void onBackPressed() {
