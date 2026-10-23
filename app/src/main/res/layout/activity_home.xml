@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@raw/splash_bg" />
+            android:src="@drawable/splash_bg" />
 
         <VideoView
             android:id="@+id/splash_video_view"
