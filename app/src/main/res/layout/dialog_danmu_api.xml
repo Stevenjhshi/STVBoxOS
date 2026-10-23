@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#80000000"> <!-- 【新增】加上全屏半透明遮罩 -->
 
     <LinearLayout
         android:layout_width="@dimen/vs_720"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/shape_danmu_setting_bg"
+        android:background="#F21E1E24" <!-- 【修改】去掉原本的透明 shape，写死深邃纯色 -->
         android:orientation="vertical"
         android:padding="@dimen/vs_30">
 
