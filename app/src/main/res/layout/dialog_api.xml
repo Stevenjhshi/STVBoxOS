@@ -2,14 +2,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="#80000000"> <!-- 【新增】加上全屏半透明遮罩 -->
 
     <!-- 将外层容器高度改为 wrap_content，避免内部控件溢出 -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/shape_danmu_setting_bg"
+        android:background="#F21E1E24" <!-- 【修改】去掉原本的透明 shape，写死深邃纯色 -->
         android:orientation="horizontal"
         android:padding="@dimen/vs_35">
 
