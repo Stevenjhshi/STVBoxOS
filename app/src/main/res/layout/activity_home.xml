@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212"> <!-- 【深邃黑】 -->
+    android:background="#121212">
 
-    <!-- ================= 主界面布局（藏在启动页下面） ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content_layout"
         android:layout_width="match_parent"
@@ -85,39 +84,40 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ================= 启动页盖在最顶层 ================= -->
     <FrameLayout
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#121212"> <!-- 【深邃黑】 -->
+        android:background="#121212">
 
         <ImageView
             android:id="@+id/splash_static_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@raw/splash_bg" />
+            android:src="@drawable/splash_bg" /> <!-- 注意：这里必须是 drawable，不是 raw -->
 
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <!-- 【修改】marginBottom 从 150mm 改为 80mm，往下移 -->
         <ProgressBar
             android:id="@+id/splash_progress"
             android:layout_width="350mm"
             android:layout_height="3mm"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="150mm"
+            android:layout_marginBottom="80mm" 
             android:indeterminate="true"
             android:indeterminateTint="#1890FF"/>
 
+        <!-- 【修改】marginBottom 从 110mm 改为 50mm，往下移 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="110mm"
+            android:layout_marginBottom="50mm"
             android:text="数据加载中..."
             android:textColor="#1890FF"
             android:textSize="14sp" />
