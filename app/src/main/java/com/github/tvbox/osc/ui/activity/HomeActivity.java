@@ -121,7 +121,6 @@ public class HomeActivity extends BaseActivity {
     private View mSplashContainer;
     private View mMainContentLayout;
     private android.widget.VideoView mSplashVideo;
-    private ImageView mSplashImg;
     private boolean isOverlayHidden = false;
     // =======================================================
 
@@ -341,9 +340,6 @@ public class HomeActivity extends BaseActivity {
     private void initSplashOverlay() {
         if (mSplashContainer == null) return;
         mSplashVideo = mSplashContainer.findViewById(R.id.splash_video_view);
-        mSplashImg = mSplashContainer.findViewById(R.id.splash_static_img);
-
-        mSplashImg.setScaleType(ImageView.ScaleType.FIT_XY);
 
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
         mSplashVideo.setVideoURI(android.net.Uri.parse(videoPath));
@@ -355,11 +351,7 @@ public class HomeActivity extends BaseActivity {
                 mp.setVolume(0, 0);
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                 
-                // 【核心修复】视频一准备好，立刻把底下的静态图设为不可见，防止静态图先出或者重叠
-                if (mSplashImg != null) {
-                    mSplashImg.setVisibility(View.GONE);
-                }
-                
+                // 静态图已删除，直接播放视频
                 mSplashVideo.start();
             }
         });
@@ -380,7 +372,7 @@ public class HomeActivity extends BaseActivity {
         FrameLayout.LayoutParams containerLp = new FrameLayout.LayoutParams(barWidth, barHeight);
         containerLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         
-        // 【核心修复】这里的 150 改成了 80，让动态跑马灯也往下移
+        // 底部的跑马灯也下移
         containerLp.bottomMargin = AutoSizeUtils.mm2px(this, 80); 
         progressContainer.setLayoutParams(containerLp);
 
