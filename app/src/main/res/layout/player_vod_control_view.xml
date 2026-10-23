@@ -200,13 +200,13 @@
         android:textStyle="bold"
         android:visibility="gone" />
 
-    <!-- ================= 底部控制栏 (40%不透明度) ================= -->
+    <!-- ================= 底部控制栏 (80%不透明度) ================= -->
     <LinearLayout
         android:id="@+id/bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#66000000" 
+        android:background="#CC000000" 
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:paddingLeft="@dimen/vs_20"
