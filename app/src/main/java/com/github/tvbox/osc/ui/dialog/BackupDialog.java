@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
@@ -39,6 +41,11 @@ public class BackupDialog extends BaseDialog {
     public BackupDialog(@NonNull @NotNull Context context) {
         super(context);
         setContentView(R.layout.dialog_backup);
+        
+        if (getWindow() != null) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F21A1A20")));
+        }
+
         TvRecyclerView tvRecyclerView = ((TvRecyclerView) findViewById(R.id.list));
         BackupAdapter adapter = new BackupAdapter();
         tvRecyclerView.setAdapter(adapter);
