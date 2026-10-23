@@ -12,13 +12,11 @@ jobs:
 
     steps:
     - name: Checkout code
-      # 【优化】从 v4 升级到 v5，消除 Node.js 20 废弃警告
       uses: actions/checkout@v5
       with:
         fetch-depth: 0 
 
     - name: Set up JDK 17
-      # 【优化】从 v4 升级到 v5，消除 setup-java 废弃警告
       uses: actions/setup-java@v5
       with:
         java-version: '17'
@@ -97,8 +95,8 @@ jobs:
         EOF
 
     - name: Build with Gradle
-      # 【优化】加上 --build-cache 参数，强制使用缓存加速
-      run: ./gradlew :app:assembleRelease --build-cache
+      # 【核心修改】加入了 clean，强制清理缓存，确保新图标和新资源被彻底打包进去
+      run: ./gradlew clean :app:assembleRelease --build-cache
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
@@ -111,7 +109,6 @@ jobs:
       with:
         tag_name: v${{ env.NEW_VERSION }}
         name: STVBox v${{ env.NEW_VERSION }}
-        # 👇【核心修改】把 txt 文档连同 apk 一起传上去
         files: |
           app/build/outputs/apk/release/*.apk
           ReleaseNote.txt
