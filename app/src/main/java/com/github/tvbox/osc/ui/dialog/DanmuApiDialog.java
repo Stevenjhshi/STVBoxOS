@@ -1,6 +1,8 @@
 package com.github.tvbox.osc.ui.dialog;
 
 import android.content.Context;
+import android.graphics.Color; // 【新增导入】
+import android.graphics.drawable.ColorDrawable; // 【新增导入】
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -22,6 +24,12 @@ public class DanmuApiDialog extends BaseDialog {
     public DanmuApiDialog(@NonNull @NotNull Context context) {
         super(context);
         setContentView(R.layout.dialog_danmu_api);
+        
+        // 👇【新增】强制设置系统窗口背景为深色，防止底层界面透出
+        if (getWindow() != null) {
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#F21A1A20")));
+        }
+        
         setCanceledOnTouchOutside(false);
         input = findViewById(R.id.input);
         input.setText(Hawk.get(HawkConfig.DANMU_API, ""));
