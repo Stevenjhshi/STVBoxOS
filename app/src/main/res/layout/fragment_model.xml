@@ -66,7 +66,17 @@
                         android:textSize="@dimen/ts_30" />
             </LinearLayout>
 
-            <!-- 配置地址行 -->
+            <!-- ==================== 分组：基础配置 ==================== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_marginTop="@dimen/vs_5"
+                android:layout_marginBottom="@dimen/vs_5"
+                android:text="🌐 基础配置"
+                android:textColor="#02F8E1"
+                android:textSize="@dimen/ts_22" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_60"
@@ -219,7 +229,17 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 首页站源行 -->
+            <!-- ==================== 分组：首页与搜索 ==================== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_marginTop="@dimen/vs_10"
+                android:layout_marginBottom="@dimen/vs_5"
+                android:text="📺 首页与搜索"
+                android:textColor="#02F8E1"
+                android:textSize="@dimen/ts_22" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_60"
@@ -315,7 +335,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 首页推荐/搜索行 (4格) -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -500,7 +519,17 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ======================== 播放器/渲染行（4格） ======================== -->
+            <!-- ==================== 分组：播放与解码 ==================== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_marginTop="@dimen/vs_10"
+                android:layout_marginBottom="@dimen/vs_5"
+                android:text="🎬 播放与解码"
+                android:textColor="#02F8E1"
+                android:textSize="@dimen/ts_22" />
+
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -693,7 +722,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ======================== 弹幕/DNS行（4格） ======================== -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -886,7 +914,17 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ==================== 嗅探、历史、备份（4格） ==================== -->
+            <!-- ==================== 分组：数据与历史 ==================== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_marginTop="@dimen/vs_10"
+                android:layout_marginBottom="@dimen/vs_5"
+                android:text="📦 数据与历史"
+                android:textColor="#02F8E1"
+                android:textSize="@dimen/ts_22" />
+
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -894,7 +932,6 @@
                     android:focusable="false"
                     android:orientation="horizontal">
 
-                <!-- 1. 嗅探Webview -->
                 <LinearLayout
                         android:id="@+id/llParseWebVew"
                         android:layout_width="@dimen/vs_0"
@@ -941,7 +978,6 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 2. 历史合并 -->
                 <LinearLayout
                         android:id="@+id/llHistoryMerge"
                         android:layout_width="@dimen/vs_0"
@@ -989,7 +1025,6 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 3. 历史记录 -->
                 <LinearLayout
                         android:id="@+id/llHistoryNum"
                         android:layout_width="@dimen/vs_0"
@@ -1037,7 +1072,6 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 4. 数据备份 -->
                 <LinearLayout
                         android:id="@+id/llBackup"
                         android:layout_width="@dimen/vs_0"
@@ -1075,7 +1109,17 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 壁纸行 (4格) -->
+            <!-- ==================== 分组：外观与缓存 ==================== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_marginTop="@dimen/vs_10"
+                android:layout_marginBottom="@dimen/vs_5"
+                android:text="🖼️ 外观与缓存"
+                android:textColor="#02F8E1"
+                android:textSize="@dimen/ts_22" />
+
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -1250,7 +1294,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ==================== 底行：IJK缓存、清空缓存、关于、重置App ==================== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_60"
@@ -1258,7 +1301,6 @@
                 android:focusable="false"
                 android:orientation="horizontal">
 
-                <!-- 1. IJK缓存 -->
                 <LinearLayout
                         android:id="@+id/llIjkCachePlay"
                         android:layout_width="@dimen/vs_0"
@@ -1305,7 +1347,6 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 2. 清空缓存 -->
                 <LinearLayout
                         android:id="@+id/llClearCache"
                         android:layout_width="@dimen/vs_0"
@@ -1344,13 +1385,47 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 3. 关于 -->
-                <LinearLayout
-                        android:id="@+id/llAbout"
+                <!-- 补位空View -->
+                <View
                         android:layout_width="@dimen/vs_0"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/vs_5"
                         android:layout_marginLeft="@dimen/vs_5"
+                        android:layout_marginEnd="@dimen/vs_5"
+                        android:layout_marginRight="@dimen/vs_5"
+                        android:layout_weight="1" />
+
+                <!-- 补位空View -->
+                <View
+                        android:layout_width="@dimen/vs_0"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/vs_5"
+                        android:layout_marginLeft="@dimen/vs_5"
+                        android:layout_weight="1" />
+            </LinearLayout>
+
+            <!-- ==================== 分组：系统与重置 ==================== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/vs_10"
+                android:layout_marginTop="@dimen/vs_10"
+                android:layout_marginBottom="@dimen/vs_5"
+                android:text="⚙️ 系统与重置"
+                android:textColor="#02F8E1"
+                android:textSize="@dimen/ts_22" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/vs_60"
+                android:layout_marginBottom="@dimen/vs_10"
+                android:focusable="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                        android:id="@+id/llAbout"
+                        android:layout_width="@dimen/vs_0"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="@dimen/vs_5"
                         android:layout_marginRight="@dimen/vs_5"
                         android:layout_weight="1"
@@ -1392,13 +1467,14 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 4. 重置App -->
                 <LinearLayout
                         android:id="@+id/llResetApp"
                         android:layout_width="@dimen/vs_0"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/vs_5"
                         android:layout_marginLeft="@dimen/vs_5"
+                        android:layout_marginEnd="@dimen/vs_5"
+                        android:layout_marginRight="@dimen/vs_5"
                         android:layout_weight="1"
                         android:background="@drawable/shape_setting_model_focus"
                         android:focusable="true"
@@ -1429,6 +1505,23 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
+                <!-- 补位空View -->
+                <View
+                        android:layout_width="@dimen/vs_0"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/vs_5"
+                        android:layout_marginLeft="@dimen/vs_5"
+                        android:layout_marginEnd="@dimen/vs_5"
+                        android:layout_marginRight="@dimen/vs_5"
+                        android:layout_weight="1" />
+
+                <!-- 补位空View -->
+                <View
+                        android:layout_width="@dimen/vs_0"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/vs_5"
+                        android:layout_marginLeft="@dimen/vs_5"
+                        android:layout_weight="1" />
             </LinearLayout>
 
         </LinearLayout>
