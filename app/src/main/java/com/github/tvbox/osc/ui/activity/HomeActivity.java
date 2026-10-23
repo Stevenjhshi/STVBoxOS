@@ -343,7 +343,6 @@ public class HomeActivity extends BaseActivity {
         mSplashVideo = mSplashContainer.findViewById(R.id.splash_video_view);
         mSplashImg = mSplashContainer.findViewById(R.id.splash_static_img);
 
-        // 【核心修复1】强行让 ImageView 使用 fitXY 拉伸铺满，彻底防止缩放跳跃
         mSplashImg.setScaleType(ImageView.ScaleType.FIT_XY);
 
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
@@ -354,15 +353,17 @@ public class HomeActivity extends BaseActivity {
             public void onPrepared(android.media.MediaPlayer mp) {
                 mp.setLooping(false); 
                 mp.setVolume(0, 0);
-                
-                // 【核心修复2】强制 VideoView 裁剪铺满全屏，和 ImageView 的渲染比例100%对齐
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
+                
+                // 【核心修复】视频一准备好，立刻把底下的静态图设为不可见，防止静态图先出或者重叠
+                if (mSplashImg != null) {
+                    mSplashImg.setVisibility(View.GONE);
+                }
                 
                 mSplashVideo.start();
             }
         });
 
-        // 视频播完后，直接干掉视频层，底下的静态图自然露出来
         mSplashVideo.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(android.media.MediaPlayer mp) {
@@ -370,7 +371,7 @@ public class HomeActivity extends BaseActivity {
             }
         });
         
-        // 动态注入赛博朋克流光线（单向从左到右的跑马灯）
+        // 动态注入赛博朋克流光线
         FrameLayout splashContainer = (FrameLayout) mSplashContainer;
         int barWidth = AutoSizeUtils.mm2px(this, 350);
         int barHeight = AutoSizeUtils.mm2px(this, 3); 
@@ -378,7 +379,9 @@ public class HomeActivity extends BaseActivity {
         FrameLayout progressContainer = new FrameLayout(this);
         FrameLayout.LayoutParams containerLp = new FrameLayout.LayoutParams(barWidth, barHeight);
         containerLp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        containerLp.bottomMargin = AutoSizeUtils.mm2px(this, 150);
+        
+        // 【核心修复】这里的 150 改成了 80，让动态跑马灯也往下移
+        containerLp.bottomMargin = AutoSizeUtils.mm2px(this, 80); 
         progressContainer.setLayoutParams(containerLp);
 
         View baseLine = new View(this);
@@ -402,7 +405,6 @@ public class HomeActivity extends BaseActivity {
 
         progressContainer.addView(shimmerView);
 
-        // 【核心修复3】单向动画，从最左边冲入，最右边冲出
         ObjectAnimator animator = ObjectAnimator.ofFloat(shimmerView, "translationX", -shimmerWidth, (float)barWidth);
         animator.setDuration(1200); 
         animator.setInterpolator(new LinearInterpolator()); 
@@ -416,7 +418,6 @@ public class HomeActivity extends BaseActivity {
         splashContainer.addView(progressContainer);
     }
 
-    // 隐藏启动页
     private void hideSplashOverlay() {
         if (isOverlayHidden || mSplashContainer == null) return;
         isOverlayHidden = true;
@@ -429,7 +430,6 @@ public class HomeActivity extends BaseActivity {
             mSplashVideo.stopPlayback();
         }
 
-        // 优雅淡出启动页
         mSplashContainer.animate()
                 .alpha(0f)
                 .setDuration(500)
