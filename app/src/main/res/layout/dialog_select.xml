@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#80000000"> <!-- 【新增】加上半透明黑色遮罩，让底部的字暗下去 -->
+    android:background="#80000000">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_root"
         android:layout_width="@dimen/vs_480"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="#FF1E1E24"> <!-- 【修改】改成 100% 完全不透明，彻底防透底 -->
+        android:background="#FF1E1E24">
 
         <TextView
             android:id="@+id/title"
