@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 1. 遥控器选中时的状态：保留你原本的设定和白色外框 -->
     <item android:state_focused="true">
         <shape>
             <corners android:radius="@dimen/vs_5" />
@@ -7,10 +8,12 @@
             <stroke android:width="@dimen/vs_2" android:color="@android:color/white" />
         </shape>
     </item>
+    
+    <!-- 2. 默认状态（未选中）：极暗深灰，凸显卡片轮廓 -->
     <item android:state_focused="false">
         <shape>
             <corners android:radius="@dimen/vs_5" />
-            <solid android:color="@color/color_6632364E" />
+            <solid android:color="#FF080808" /> 
         </shape>
     </item>
 </selector>
