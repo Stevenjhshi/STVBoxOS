@@ -210,24 +210,38 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 dialog.show();
             }
         });
-        findViewById(R.id.llWpRecovery).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.llWp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
-                // 重置壁纸为默认（设为 -1 或特定的重置值）
-                com.orhanobut.hawk.Hawk.put(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, -1);
-                ((BaseActivity) requireActivity()).changeWallpaper(false);
-                android.widget.Toast.makeText(getContext(), "已恢复默认背景", android.widget.Toast.LENGTH_SHORT).show();
-            }
-        });
-        findViewById(R.id.llWpRecovery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FastClickCheckUtil.check(v);
-                File wp = new File(requireActivity().getFilesDir().getAbsolutePath() + "/wp");
-                if (wp.exists())
-                    wp.delete();
-                ((BaseActivity) requireActivity()).changeWallpaper(true);
+                
+                // 读取当前颜色索引（默认0）
+                int wallIndex = com.orhanobut.hawk.Hawk.get(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, 0);
+                // 在 0 到 4 之间循环（共5种颜色）
+                wallIndex = (wallIndex + 1) % 5;
+                com.orhanobut.hawk.Hawk.put(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, wallIndex);
+                
+                // 准备5种颜色
+                int colorRes = 0xFF000000; // 默认纯黑
+                String colorName = "深邃黑";
+                if (wallIndex == 1) {
+                    colorRes = 0xFF1A1A1A; colorName = "深空灰";
+                } else if (wallIndex == 2) {
+                    colorRes = 0xFF0A1930; colorName = "藏青蓝";
+                } else if (wallIndex == 3) {
+                    colorRes = 0xFF0B1C14; colorName = "极客绿";
+                } else if (wallIndex == 4) {
+                    colorRes = 0xFF190F24; colorName = "暗夜紫";
+                }
+                
+                // 直接给主界面的根布局设置背景色
+                if (getActivity() != null) {
+                    android.view.View rootView = getActivity().findViewById(android.R.id.content);
+                    if (rootView != null) {
+                        rootView.setBackgroundColor(colorRes);
+                    }
+                    android.widget.Toast.makeText(getContext(), "背景已切换: " + colorName, android.widget.Toast.LENGTH_SHORT).show();
+                }
             }
         });
         findViewById(R.id.llHomeApi).setOnClickListener(new View.OnClickListener() {
