@@ -89,16 +89,14 @@
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/splash_bg"> <!-- 【关键】直接把这个容器背景设为静态图 -->
+        android:background="@drawable/splash_bg"> 
 
-        <!-- 视频控件，背景设为透明，视频出来后自动盖住父容器的背景图 -->
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent" />
 
-        <!-- 进度条 -->
         <ProgressBar
             android:id="@+id/splash_progress"
             android:layout_width="350mm"
