@@ -210,27 +210,14 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 dialog.show();
             }
         });
-        findViewById(R.id.llWp).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.llWpRecovery).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
-                if (!ApiConfig.get().wallpaper.isEmpty())
-                    OkGo.<File>get(ApiConfig.get().wallpaper).execute(new FileCallback(requireActivity().getFilesDir().getAbsolutePath(), "wp") {
-                        @Override
-                        public void onSuccess(Response<File> response) {
-                            ((BaseActivity) requireActivity()).changeWallpaper(true);
-                        }
-
-                        @Override
-                        public void onError(Response<File> response) {
-                            super.onError(response);
-                        }
-
-                        @Override
-                        public void downloadProgress(Progress progress) {
-                            super.downloadProgress(progress);
-                        }
-                    });
+                // 重置壁纸为默认（设为 -1 或特定的重置值）
+                com.orhanobut.hawk.Hawk.put(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, -1);
+                ((BaseActivity) requireActivity()).changeWallpaper(false);
+                android.widget.Toast.makeText(getContext(), "已恢复默认背景", android.widget.Toast.LENGTH_SHORT).show();
             }
         });
         findViewById(R.id.llWpRecovery).setOnClickListener(new View.OnClickListener() {
