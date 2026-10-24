@@ -216,10 +216,10 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 FastClickCheckUtil.check(v);
                 
                 // 读取当前颜色索引（默认0）
-                int wallIndex = com.orhanobut.hawk.Hawk.get(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, 0);
+                int wallIndex = com.orhanobut.hawk.Hawk.get("wallpaper", 0);
                 // 在 0 到 4 之间循环（共5种颜色）
                 wallIndex = (wallIndex + 1) % 5;
-                com.orhanobut.hawk.Hawk.put(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, wallIndex);
+                com.orhanobut.hawk.Hawk.put("wallpaper", wallIndex);
                 
                 // 准备5种颜色
                 int colorRes = 0xFF000000; // 默认纯黑
