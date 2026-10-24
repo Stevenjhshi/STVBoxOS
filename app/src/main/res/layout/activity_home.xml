@@ -91,13 +91,22 @@
         android:layout_height="match_parent"
         android:background="#121212">
 
-        <!-- 静态图已经被彻底删除，直接上视频 -->
+        <!-- 【关键修改 1】在这里垫上一张静态图，它会在视频未渲染前显示 -->
+        <!-- 注意：请确保你的 drawable 里有一张叫 splash_bg 的图片 -->
+        <ImageView
+            android:id="@+id/iv_splash_cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/splash_bg" />
+
+        <!-- 视频控件。它只要一渲染出画面，就会自动盖住上面的 ImageView -->
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- 进度条已下移，避开 Logo -->
+        <!-- 进度条 -->
         <ProgressBar
             android:id="@+id/splash_progress"
             android:layout_width="350mm"
