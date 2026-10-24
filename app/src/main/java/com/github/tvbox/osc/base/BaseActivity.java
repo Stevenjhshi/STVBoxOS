@@ -72,7 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         mContext = this;
         
         initSystemUiListener();
-        CutoutUtil.adaptCutoutAboveAndroidP(mContext, true);//设置刘海
+        CutoutUtil.adaptCutoutAboveAndroidP(mContext, true);
         AppManager.getInstance().addActivity(this);
         init();
     }
@@ -275,7 +275,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     protected static BitmapDrawable globalWp = null;
 
     public void changeWallpaper(boolean force) {
-        // 1. 优先检查是否启用了纯色壁纸
         int pureColorIdx = com.orhanobut.hawk.Hawk.get("wallpaper", -1);
         if (pureColorIdx >= 0) {
             int color = 0xFF121212; // 默认深邃黑
@@ -288,7 +287,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             return; 
         }
 
-        // 2. 原有图片壁纸逻辑
         if (!force && globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
             return;
@@ -306,12 +304,8 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
                 int scaleX = imageWidth / picWidth;
                 int scaleY = imageHeight / picHeight;
                 int scale = 1;
-                if (scaleX > scaleY && scaleY >= 1) {
-                    scale = scaleX;
-                }
-                if (scaleX < scaleY && scaleX >= 1) {
-                    scale = scaleY;
-                }
+                if (scaleX > scaleY && scaleY >= 1) scale = scaleX;
+                if (scaleX < scaleY && scaleX >= 1) scale = scaleY;
                 opts.inJustDecodeBounds = false;
                 opts.inSampleSize = scale;
                 globalWp = new BitmapDrawable(BitmapFactory.decodeFile(wp.getAbsolutePath(), opts));
@@ -323,7 +317,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             globalWp = null;
         }
         
-        // 3. 如果没有任何图片，使用系统默认深色
         if (globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
         } else {
