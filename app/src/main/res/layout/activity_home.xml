@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"> <!-- 【修改点 1】根布局背景改为透明，让底层壁纸透出来 -->
+    android:background="@android:color/transparent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content_layout"
@@ -89,17 +89,9 @@
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#121212">
+        android:background="@drawable/splash_bg"> <!-- 【关键】直接把这个容器背景设为静态图 -->
 
-        <!-- 【必须有这个静态图，名字是对的】 -->
-        <ImageView
-            android:id="@+id/iv_splash_cover"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/splash_bg" />
-
-        <!-- 视频控件在它上面 -->
+        <!-- 视频控件，背景设为透明，视频出来后自动盖住父容器的背景图 -->
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
