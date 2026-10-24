@@ -337,25 +337,7 @@ public class HomeActivity extends BaseActivity {
                 mp.setLooping(false); 
                 mp.setVolume(0, 0);
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
-                
                 mSplashVideo.start();
-                
-                // 【核心提速】视频准备就绪，立刻在 50 毫秒后撤掉启动页！实现极速画面接管
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideSplashOverlay();
-                    }
-                }, 50); 
-            }
-        });
-
-        // 防闪退拦截器
-        mSplashVideo.setOnErrorListener(new android.media.MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(android.media.MediaPlayer mp, int what, int extra) {
-                hideSplashOverlay();
-                return true;
             }
         });
 
@@ -375,15 +357,11 @@ public class HomeActivity extends BaseActivity {
             mMainContentLayout.setVisibility(View.VISIBLE);
         }
 
-        try {
-            if (mSplashVideo != null) {
-                mSplashVideo.stopPlayback();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (mSplashVideo != null) {
+            mSplashVideo.stopPlayback();
         }
 
-        // 禁用动画，直接隐藏，绝不闪退
+        // 瞬间隐藏
         mSplashContainer.setVisibility(View.GONE);
     }
 
