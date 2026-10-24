@@ -183,6 +183,33 @@ public class HomeActivity extends BaseActivity {
             useCacheConfig = bundle.getBoolean("useCache", false);
         }
         initData();
+        // ... (上面是你截图里的代码)
+        initView();
+        initViewModel();
+        useCacheConfig = false;
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            Bundle bundle = intent.getExtras();
+            useCacheConfig = bundle.getBoolean("useCache", false);
+        }
+        initData();
+
+        // 👇👇👇 把代码粘贴在这里（第186行的大括号上面） 👇👇👇
+        
+        // 开机自动读取上次设置的背景色
+        int savedColorIdx = com.orhanobut.hawk.Hawk.get(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, 0);
+        int savedColor = 0xFF000000; // 默认黑
+        if (savedColorIdx == 1) savedColor = 0xFF1A1A1A;
+        else if (savedColorIdx == 2) savedColor = 0xFF0A1930;
+        else if (savedColorIdx == 3) savedColor = 0xFF0B1C14;
+        else if (savedColorIdx == 4) savedColor = 0xFF190F24;
+        
+        android.view.View rootView = findViewById(android.R.id.content);
+        if (rootView != null) {
+            rootView.setBackgroundColor(savedColor);
+        }
+        
+        // 👆👆👆 粘贴到这里结束 👆👆👆
     }
 
     private void initView() {
