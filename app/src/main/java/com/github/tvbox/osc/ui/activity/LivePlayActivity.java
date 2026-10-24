@@ -964,11 +964,8 @@ public class LivePlayActivity extends BaseActivity {
         liveIconNullText.setVisibility(View.INVISIBLE);
         imgLiveIcon.setVisibility(View.VISIBLE);
         
-        mHandler.postDelayed(() -> {
-            if (channel_Name != null && channel_Name.getChannelName().equals(channelName)) {
-                com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.FIT_CENTER);
-            }
-        }, 1500);
+        // 去掉延迟，直接同步加载
+        com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.FIT_CENTER);
     }
     
     @SuppressLint("NotifyDataSetChanged")
