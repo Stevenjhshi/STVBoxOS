@@ -215,35 +215,39 @@ public class ModelSettingFragment extends BaseLazyFragment {
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
                 
-                // 读取当前颜色索引（默认0）
-                int wallIndex = com.orhanobut.hawk.Hawk.get("wallpaper", 0);
-                // 在 0 到 4 之间循环（共5种颜色）
+                // 读取当前索引（默认从 -1 开始，这样点第一次变成 0 纯黑）
+                int wallIndex = Hawk.get("wallpaper", -1);
                 wallIndex = (wallIndex + 1) % 5;
-                com.orhanobut.hawk.Hawk.put("wallpaper", wallIndex);
+                Hawk.put("wallpaper", wallIndex);
                 
-                // 准备5种颜色
-                int colorRes = 0xFF000000; // 默认纯黑
+                // 调用底层 BaseActivity 的刷新方法，强制立即生效
+                ((BaseActivity) requireActivity()).changeWallpaper(true);
+                
                 String colorName = "深邃黑";
-                if (wallIndex == 1) {
-                    colorRes = 0xFF1A1A1A; colorName = "深空灰";
-                } else if (wallIndex == 2) {
-                    colorRes = 0xFF0A1930; colorName = "藏青蓝";
-                } else if (wallIndex == 3) {
-                    colorRes = 0xFF0B1C14; colorName = "极客绿";
-                } else if (wallIndex == 4) {
-                    colorRes = 0xFF190F24; colorName = "暗夜紫";
-                }
+                if (wallIndex == 1) colorName = "深空灰";
+                else if (wallIndex == 2) colorName = "藏青蓝";
+                else if (wallIndex == 3) colorName = "极客绿";
+                else if (wallIndex == 4) colorName = "暗夜紫";
                 
-                // 直接给主界面的根布局设置背景色
-                if (getActivity() != null) {
-                    android.view.View rootView = getActivity().findViewById(android.R.id.content);
-                    if (rootView != null) {
-                        rootView.setBackgroundColor(colorRes);
-                    }
-                    android.widget.Toast.makeText(getContext(), "背景已切换: " + colorName, android.widget.Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(getContext(), "背景已切换: " + colorName, Toast.LENGTH_SHORT).show();
             }
         });
+
+        findViewById(R.id.llWpRecovery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FastClickCheckUtil.check(v);
+                
+                // 将索引重置为 -1（恢复默认状态，如果你想让默认是黑，可以改成 0）
+                Hawk.put("wallpaper", -1);
+                
+                // 调用底层刷新
+                ((BaseActivity) requireActivity()).changeWallpaper(true);
+                
+                Toast.makeText(getContext(), "已恢复默认壁纸", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
         findViewById(R.id.llHomeApi).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
