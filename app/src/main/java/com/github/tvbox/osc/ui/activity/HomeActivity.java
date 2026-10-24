@@ -178,7 +178,6 @@ public class HomeActivity extends BaseActivity {
         initViewModel();
         useCacheConfig = false;
         
-        // 这段代码保留一份就行，不要重复粘贴！
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
             Bundle bundle = intent.getExtras();
@@ -339,6 +338,7 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
+    // 初始化视频（极简安全版，绝不闪退）
     private void initSplashOverlay() {
         if (mSplashContainer == null) return;
         mSplashVideo = mSplashContainer.findViewById(R.id.splash_video_view);
@@ -351,22 +351,10 @@ public class HomeActivity extends BaseActivity {
             public void onPrepared(android.media.MediaPlayer mp) {
                 mp.setLooping(false); 
                 mp.setVolume(0, 0);
-                // 铺满全屏
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                 
+                // 直接播放，视频一出来就会自然盖住父容器的背景图，不需要任何隐藏图片的操作
                 mSplashVideo.start();
-                
-                // 【核心动作】视频开始播放后，让静态图死死挡住 2 秒
-                final View splashCover = mSplashContainer.findViewById(R.id.iv_splash_cover);
-                if (splashCover != null) {
-                    splashCover.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 2秒后，视频早就渲染好画面了，这时候再让图消失，绝对不会黑屏
-                            splashCover.setVisibility(View.GONE);
-                        }
-                    }, 2000); 
-                }
             }
         });
 
@@ -376,8 +364,6 @@ public class HomeActivity extends BaseActivity {
                 hideSplashOverlay();
             }
         });
-        
-        // 下面是进度条的代码，保留你原来的即可，不用动
     }
 
     private void hideSplashOverlay() {
