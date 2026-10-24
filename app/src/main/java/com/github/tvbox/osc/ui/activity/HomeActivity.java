@@ -355,11 +355,23 @@ public class HomeActivity extends BaseActivity {
             public void onPrepared(android.media.MediaPlayer mp) {
                 mp.setLooping(false); 
                 mp.setVolume(0, 0);
+                // 开启裁剪缩放，确保视频铺满
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                 
-                // 【终极极简版】直接播放！
-                // 因为 XML 里已经在 VideoView 下方垫了一张静态图，视频一出来就会自动无缝盖住它，绝对不闪！
                 mSplashVideo.start();
+                
+                // 【核心】视频开始播放后，我们让它底下的静态图多停留一会儿
+                // 延迟 2000 毫秒（2秒），这足够老盒子把视频第一帧渲染出来了
+                final View splashCover = mSplashContainer.findViewById(R.id.iv_splash_cover);
+                if (splashCover != null) {
+                    splashCover.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 时间一到，直接隐藏图片，把视频露出来
+                            splashCover.setVisibility(View.GONE);
+                        }
+                    }, 2000); // 如果觉得还不够，可以改成 2500 甚至 3000
+                }
             }
         });
 
