@@ -69,6 +69,8 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         }
         super.onCreate(savedInstanceState);
         
+        // 【已清理】这里不再强制写死黑背景，完全交由 changeWallpaper 接管
+        
         setContentView(getLayoutResID());
         mContext = this;
         initSystemUiListener();
@@ -324,14 +326,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         }
         
         // 3. 如果没有任何图片壁纸，使用系统默认的深色底
-        if (globalWp != null) {
-            getWindow().setBackgroundDrawable(globalWp);
-        } else {
-            getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
-        }
-    }
-        
-        // 【治病根】如果没有自定义壁纸，使用深邃黑
         if (globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
         } else {
