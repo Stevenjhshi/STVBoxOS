@@ -352,7 +352,44 @@ public class HomeActivity extends BaseActivity {
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
                 
                 // 静态图已删除，直接播放视频
-                mSplashVideo.start();
+                    
+                    mSplashVideo.start();
+
+                    // ================== 新增：首帧垫底 + 丝滑淡出 ==================
+                    // 1. 动态创建一张图片
+                    final android.widget.ImageView splashCover = new android.widget.ImageView(HomeActivity.this);
+                    splashCover.setImageResource(com.github.tvbox.osc.R.drawable.splash_bg); // 你的图片
+                    splashCover.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP); // 跟视频一样铺满防变形
+
+                    // 2. 盖在最顶层
+                    if (mSplashContainer instanceof android.view.ViewGroup) {
+                        ((android.view.ViewGroup) mSplashContainer).addView(splashCover, new android.view.ViewGroup.LayoutParams(
+                                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                        ));
+                    }
+
+                    // 3. 延迟 800 毫秒后，执行淡出动画
+                    splashCover.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            android.view.animation.AlphaAnimation alphaAnimation = new android.view.animation.AlphaAnimation(1.0f, 0.0f);
+                            alphaAnimation.setDuration(800);
+                            alphaAnimation.setFillAfter(true);
+                            alphaAnimation.setAnimationListener(new android.view.animation.Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(android.view.animation.Animation animation) {}
+                                @Override
+                                public void onAnimationEnd(android.view.animation.Animation animation) {
+                                    splashCover.setVisibility(View.GONE); // 动画彻底结束隐藏图片
+                                }
+                                @Override
+                                public void onAnimationRepeat(android.view.animation.Animation animation) {}
+                            });
+                            splashCover.startAnimation(alphaAnimation);
+                        }
+                    }, 800); 
+                    // ===============================================================
             }
         });
 
