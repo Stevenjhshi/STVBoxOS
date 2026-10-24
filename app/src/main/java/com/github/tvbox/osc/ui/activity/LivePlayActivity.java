@@ -888,19 +888,29 @@ public class LivePlayActivity extends BaseActivity {
         updateChannelIcon(channelName, iconUrl);
     }
 
-    private String getForceLogoUrl(String name) {
+        private String getForceLogoUrl(String name) {
         if (name == null) return null;
-        String cleanName = name.replace("-", "").replace(" ", "").trim();
         
+        // 兼容全角加号，并去掉所有空格和横杠
+        String cleanName = name.replace("-", "").replace(" ", "").replace("＋", "+").trim();
+        String upperName = cleanName.toUpperCase(Locale.ROOT);
+
+        // 1. 最高优先级：先判断 CCTV5+ 和 CCTV4K（防止被下面的 CCTV\d 截胡）
+        if (upperName.contains("5+") || upperName.contains("5PLUS")) {
+            return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV5+.png";
+        }
+        if (upperName.contains("4K")) {
+            return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV4K.png";
+        }
+
+        // 2. 匹配普通央视（CCTV1 - CCTV17）
         Matcher cctvMatcher = Pattern.compile("(?i)^CCTV(\\d+)").matcher(cleanName);
         if (cctvMatcher.find()) {
             String num = cctvMatcher.group(1);
-            // 换成 Gitee 图床
             return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV" + num + ".png";
         }
-        if (cleanName.contains("CCTV5+")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV5+.png";
-        if (cleanName.contains("CCTV4K")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/CCTV4K.png";
 
+        // 3. 匹配各省市卫视（全部补全）
         if (cleanName.contains("湖南")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/湖南卫视.png";
         if (cleanName.contains("浙江")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/浙江卫视.png";
         if (cleanName.contains("江苏")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/江苏卫视.png";
@@ -909,9 +919,34 @@ public class LivePlayActivity extends BaseActivity {
         if (cleanName.contains("安徽")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/安徽卫视.png";
         if (cleanName.contains("广东")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/广东卫视.png";
         if (cleanName.contains("深圳")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/深圳卫视.png";
+        if (cleanName.contains("山东")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/山东卫视.png";
+        if (cleanName.contains("天津")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/天津卫视.png";
+        if (cleanName.contains("重庆")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/重庆卫视.png";
+        if (cleanName.contains("四川")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/四川卫视.png";
+        if (cleanName.contains("湖北")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/湖北卫视.png";
+        if (cleanName.contains("河南")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/河南卫视.png";
+        if (cleanName.contains("河北")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/河北卫视.png";
+        if (cleanName.contains("黑龙江")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/黑龙江卫视.png";
+        if (cleanName.contains("吉林")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/吉林卫视.png";
+        if (cleanName.contains("辽宁")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/辽宁卫视.png";
+        if (cleanName.contains("江西")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/江西卫视.png";
+        if (cleanName.contains("福建") || cleanName.contains("东南")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/东南卫视.png";
+        if (cleanName.contains("贵州")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/贵州卫视.png";
+        if (cleanName.contains("云南")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/云南卫视.png";
+        if (cleanName.contains("广西")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/广西卫视.png";
+        if (cleanName.contains("甘肃")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/甘肃卫视.png";
+        if (cleanName.contains("宁夏")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/宁夏卫视.png";
+        if (cleanName.contains("青海")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/青海卫视.png";
+        if (cleanName.contains("新疆")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/新疆卫视.png";
+        if (cleanName.contains("西藏")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/西藏卫视.png";
+        if (cleanName.contains("内蒙古")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/内蒙古卫视.png";
+        if (cleanName.contains("海南")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/海南卫视.png";
+        if (cleanName.contains("山西")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/山西卫视.png";
+        if (cleanName.contains("陕西")) return "https://gitee.com/mytv-android/myTVlogo/raw/main/img/陕西卫视.png";
+
         return null;
     }
-
+    
     @SuppressLint("SetTextI18n")
     private void updateChannelIcon(String channelName, String logoUrl) {
         if (channel_Name == null || channel_Name.getChannelName() == null || !channel_Name.getChannelName().equals(channelName)) return;
@@ -929,10 +964,10 @@ public class LivePlayActivity extends BaseActivity {
         liveIconNullText.setVisibility(View.INVISIBLE);
         imgLiveIcon.setVisibility(View.VISIBLE);
         
-        // 使用项目自带的 ImgUtil 加载 HTTPS 图片
-        com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.CENTER_INSIDE);
+        // 注意这里：把 CENTER_INSIDE 改成了 FIT_CENTER，让图片尽可能放大撑满，解决台标偏小的问题
+        com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.FIT_CENTER);
     }
-
+    
     @SuppressLint("NotifyDataSetChanged")
     public  void divLoadEpgRight(View view) {
         if (epgListAdapter.getData() == null || epgListAdapter.getData().isEmpty()) {
