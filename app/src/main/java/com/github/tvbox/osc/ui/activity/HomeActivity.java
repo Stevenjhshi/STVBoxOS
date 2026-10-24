@@ -197,7 +197,7 @@ public class HomeActivity extends BaseActivity {
         // 👇👇👇 把代码粘贴在这里（第186行的大括号上面） 👇👇👇
         
         // 开机自动读取上次设置的背景色
-        int savedColorIdx = com.orhanobut.hawk.Hawk.get(com.github.tvbox.osc.util.HawkConfig.WALLPAPER, 0);
+        int savedColorIdx = com.orhanobut.hawk.Hawk.get("wallpaper", 0);
         int savedColor = 0xFF000000; // 默认黑
         if (savedColorIdx == 1) savedColor = 0xFF1A1A1A;
         else if (savedColorIdx == 2) savedColor = 0xFF0A1930;
