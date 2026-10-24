@@ -964,8 +964,12 @@ public class LivePlayActivity extends BaseActivity {
         liveIconNullText.setVisibility(View.INVISIBLE);
         imgLiveIcon.setVisibility(View.VISIBLE);
         
-        // 注意这里：把 CENTER_INSIDE 改成了 FIT_CENTER，让图片尽可能放大撑满，解决台标偏小的问题
-        com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.FIT_CENTER);
+        // 【关键】延迟 1500 毫秒（1.5秒）再加载台标，把冷启动时的带宽全让给视频流！
+        mHandler.postDelayed(() -> {
+            if (channel_Name != null && channel_Name.getChannelName().equals(channelName)) {
+                com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.FIT_CENTER);
+            }
+        }, 1500);
     }
     
     @SuppressLint("NotifyDataSetChanged")
@@ -1926,7 +1930,8 @@ public class LivePlayActivity extends BaseActivity {
                         break;
                     case VideoView.STATE_PREPARING:
                     case VideoView.STATE_BUFFERING:
-                        mHandler.postDelayed(mConnectTimeoutChangeSourceRun, (Hawk.get(HawkConfig.LIVE_CONNECT_TIMEOUT, 1) + 1) * 5000L);
+                        // 将等待时间直接固定为 5000 毫秒（5秒），连不上就果断切下一个源，不再傻等10秒
+                        mHandler.postDelayed(mConnectTimeoutChangeSourceRun, 5000L);
                         break;
                 }
             }
