@@ -18,9 +18,9 @@
         <item name="android:windowBackground">#121212</item>
     </style>
 
-    <!-- 【核心】启动页主题，系统一拉取App立刻显示图片，0秒黑屏 -->
+    <!-- 【回退】冷启动深邃黑 -->
     <style name="SplashTheme" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_bg</item>
+        <item name="android:windowBackground">#121212</item>
     </style>
 
     <!-- 自定义dialog样式 -->
