@@ -69,9 +69,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         }
         super.onCreate(savedInstanceState);
         
-        // 【核心修改】底层背景使用深邃黑
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
-        
         setContentView(getLayoutResID());
         mContext = this;
         initSystemUiListener();
@@ -278,8 +275,24 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     protected static BitmapDrawable globalWp = null;
 
     public void changeWallpaper(boolean force) {
-        if (!force && globalWp != null)
+        // 1. 优先检查是否启用了纯色壁纸（0-4 代表颜色，-1 代表未启用纯色）
+        int pureColorIdx = com.orhanobut.hawk.Hawk.get("wallpaper", -1);
+        if (pureColorIdx >= 0) {
+            int color = 0xFF121212; // 默认深邃黑
+            if (pureColorIdx == 1) color = 0xFF1A1A1A; // 深空灰
+            else if (pureColorIdx == 2) color = 0xFF0A1930; // 藏青蓝
+            else if (pureColorIdx == 3) color = 0xFF0B1C14; // 极客绿
+            else if (pureColorIdx == 4) color = 0xFF190F24; // 暗夜紫
+            
+            getWindow().setBackgroundDrawable(new ColorDrawable(color));
+            return; // 拦截成功！不再往下执行图片壁纸逻辑
+        }
+
+        // 2. 下面保留原作者的自定义图片壁纸逻辑
+        if (!force && globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
+            return;
+        }
         try {
             File wp = new File(getFilesDir().getAbsolutePath() + "/wp");
             if (wp.exists()) {
@@ -309,6 +322,14 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             throwable.printStackTrace();
             globalWp = null;
         }
+        
+        // 3. 如果没有任何图片壁纸，使用系统默认的深色底
+        if (globalWp != null) {
+            getWindow().setBackgroundDrawable(globalWp);
+        } else {
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#121212")));
+        }
+    }
         
         // 【治病根】如果没有自定义壁纸，使用深邃黑
         if (globalWp != null) {
