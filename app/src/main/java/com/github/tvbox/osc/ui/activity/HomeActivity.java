@@ -189,6 +189,9 @@ public class HomeActivity extends BaseActivity {
     }
 
     private void initView() {
+        // 【新增】强制给整个窗口垫底，连一帧都不会闪
+        getWindow().setBackgroundDrawableResource(R.drawable.splash_bg);
+        
         this.topLayout = findViewById(R.id.topLayout);
         this.tvDate = findViewById(R.id.tvDate);
         this.tvName = findViewById(R.id.tvName);
