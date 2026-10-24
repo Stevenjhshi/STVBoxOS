@@ -964,7 +964,6 @@ public class LivePlayActivity extends BaseActivity {
         liveIconNullText.setVisibility(View.INVISIBLE);
         imgLiveIcon.setVisibility(View.VISIBLE);
         
-        // 【关键】延迟 1500 毫秒（1.5秒）再加载台标，把冷启动时的带宽全让给视频流！
         mHandler.postDelayed(() -> {
             if (channel_Name != null && channel_Name.getChannelName().equals(channelName)) {
                 com.github.tvbox.osc.util.ImgUtil.load(logoUrl, imgLiveIcon, 1, 0, 0, channel_Name.getChannelName(), ImageView.ScaleType.FIT_CENTER);
