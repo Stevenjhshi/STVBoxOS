@@ -89,9 +89,9 @@
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"> <!-- 【修改点 2】启动容器背景改为透明 -->
+        android:background="#121212">
 
-        <!-- 垫底静态图 -->
+        <!-- 【必须有这个静态图，名字是对的】 -->
         <ImageView
             android:id="@+id/iv_splash_cover"
             android:layout_width="match_parent"
@@ -99,12 +99,12 @@
             android:scaleType="centerCrop"
             android:src="@drawable/splash_bg" />
 
-        <!-- 视频控件，加透明背景防止初始化黑屏 -->
+        <!-- 视频控件在它上面 -->
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent" /> <!-- 【修改点 3】视频控件背景透明 -->
+            android:background="@android:color/transparent" />
 
         <!-- 进度条 -->
         <ProgressBar
