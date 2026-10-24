@@ -23,6 +23,7 @@
                 android:layout_marginTop="@dimen/vs_10"
                 android:orientation="vertical">
 
+            <!-- 调试模式 (默认隐藏) -->
             <LinearLayout
                     android:id="@+id/llDebug"
                     android:layout_width="match_parent"
@@ -66,23 +67,14 @@
                         android:textSize="@dimen/ts_30" />
             </LinearLayout>
 
-            <!-- ==================== 分组：基础配置 ==================== -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/vs_10"
-                android:layout_marginTop="@dimen/vs_5"
-                android:layout_marginBottom="@dimen/vs_5"
-                android:text="🌐 基础配置"
-                android:textColor="#02F8E1"
-                android:textSize="@dimen/ts_22" />
-
+            <!-- 第一行：基础配置 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_60"
                 android:layout_marginBottom="@dimen/vs_10"
                 android:focusable="false"
                 android:orientation="horizontal">
+                
                 <LinearLayout
                     android:id="@+id/llApi"
                     android:layout_width="@dimen/vs_0"
@@ -127,6 +119,7 @@
                             android:textColor="@android:color/white"
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
+                
                 <LinearLayout
                     android:id="@+id/llApiRightGroup"
                     android:layout_width="@dimen/vs_0"
@@ -229,23 +222,14 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ==================== 分组：首页与搜索 ==================== -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/vs_10"
-                android:layout_marginTop="@dimen/vs_10"
-                android:layout_marginBottom="@dimen/vs_5"
-                android:text="📺 首页与搜索"
-                android:textColor="#02F8E1"
-                android:textSize="@dimen/ts_22" />
-
+            <!-- 第二行：首页与搜索 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_60"
                 android:layout_marginBottom="@dimen/vs_10"
                 android:focusable="false"
                 android:orientation="horizontal">
+                
                 <LinearLayout
                     android:id="@+id/llHomeApi"
                     android:layout_width="@dimen/vs_0"
@@ -290,6 +274,7 @@
                             android:textColor="@android:color/white"
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
+                
                 <LinearLayout
                     android:id="@+id/tvHomeLive"
                     android:layout_width="@dimen/vs_0"
@@ -335,6 +320,7 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- 第三行：首页选项 (4个) -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -519,17 +505,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ==================== 分组：播放与解码 ==================== -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/vs_10"
-                android:layout_marginTop="@dimen/vs_10"
-                android:layout_marginBottom="@dimen/vs_5"
-                android:text="🎬 播放与解码"
-                android:textColor="#02F8E1"
-                android:textSize="@dimen/ts_22" />
-
+            <!-- 第四行：播放与解码 (4个) -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -722,6 +698,7 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- 第五行：弹幕与网络 (4个) -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -914,17 +891,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ==================== 分组：数据与历史 ==================== -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/vs_10"
-                android:layout_marginTop="@dimen/vs_10"
-                android:layout_marginBottom="@dimen/vs_5"
-                android:text="📦 数据与历史"
-                android:textColor="#02F8E1"
-                android:textSize="@dimen/ts_22" />
-
+            <!-- 第六行：数据与历史 (4个) -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -1109,17 +1076,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ==================== 分组：外观与缓存 ==================== -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/vs_10"
-                android:layout_marginTop="@dimen/vs_10"
-                android:layout_marginBottom="@dimen/vs_5"
-                android:text="🖼️ 外观与缓存"
-                android:textColor="#02F8E1"
-                android:textSize="@dimen/ts_22" />
-
+            <!-- 第七行：外观与缓存 (4个) -->
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/vs_60"
@@ -1294,6 +1251,7 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- 第八行：缓存与系统重置 (合并后的一整行 4个) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/vs_60"
@@ -1385,47 +1343,13 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
-                <!-- 补位空View -->
-                <View
-                        android:layout_width="@dimen/vs_0"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/vs_5"
-                        android:layout_marginLeft="@dimen/vs_5"
-                        android:layout_marginEnd="@dimen/vs_5"
-                        android:layout_marginRight="@dimen/vs_5"
-                        android:layout_weight="1" />
-
-                <!-- 补位空View -->
-                <View
-                        android:layout_width="@dimen/vs_0"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/vs_5"
-                        android:layout_marginLeft="@dimen/vs_5"
-                        android:layout_weight="1" />
-            </LinearLayout>
-
-            <!-- ==================== 分组：系统与重置 ==================== -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/vs_10"
-                android:layout_marginTop="@dimen/vs_10"
-                android:layout_marginBottom="@dimen/vs_5"
-                android:text="⚙️ 系统与重置"
-                android:textColor="#02F8E1"
-                android:textSize="@dimen/ts_22" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/vs_60"
-                android:layout_marginBottom="@dimen/vs_10"
-                android:focusable="false"
-                android:orientation="horizontal">
-
+                <!-- 从原最底行移上来的“关于” -->
                 <LinearLayout
                         android:id="@+id/llAbout"
                         android:layout_width="@dimen/vs_0"
                         android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/vs_5"
+                        android:layout_marginLeft="@dimen/vs_5"
                         android:layout_marginEnd="@dimen/vs_5"
                         android:layout_marginRight="@dimen/vs_5"
                         android:layout_weight="1"
@@ -1467,14 +1391,13 @@
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
 
+                <!-- 从原最底行移上来的“重置App” -->
                 <LinearLayout
                         android:id="@+id/llResetApp"
                         android:layout_width="@dimen/vs_0"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/vs_5"
                         android:layout_marginLeft="@dimen/vs_5"
-                        android:layout_marginEnd="@dimen/vs_5"
-                        android:layout_marginRight="@dimen/vs_5"
                         android:layout_weight="1"
                         android:background="@drawable/shape_setting_model_focus"
                         android:focusable="true"
@@ -1504,24 +1427,6 @@
                             android:textColor="@android:color/white"
                             android:textSize="@dimen/ts_30" />
                 </LinearLayout>
-
-                <!-- 补位空View -->
-                <View
-                        android:layout_width="@dimen/vs_0"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/vs_5"
-                        android:layout_marginLeft="@dimen/vs_5"
-                        android:layout_marginEnd="@dimen/vs_5"
-                        android:layout_marginRight="@dimen/vs_5"
-                        android:layout_weight="1" />
-
-                <!-- 补位空View -->
-                <View
-                        android:layout_width="@dimen/vs_0"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/vs_5"
-                        android:layout_marginLeft="@dimen/vs_5"
-                        android:layout_weight="1" />
             </LinearLayout>
 
         </LinearLayout>
