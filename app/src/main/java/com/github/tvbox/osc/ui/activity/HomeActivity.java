@@ -5,31 +5,19 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.IntEvaluator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
-import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -338,7 +326,6 @@ public class HomeActivity extends BaseActivity {
         setLoadSir(this.contentLayout);
     }
 
-    // 初始化视频（极简安全版，绝不闪退）
     private void initSplashOverlay() {
         if (mSplashContainer == null) return;
         mSplashVideo = mSplashContainer.findViewById(R.id.splash_video_view);
@@ -352,8 +339,7 @@ public class HomeActivity extends BaseActivity {
                 mp.setLooping(false); 
                 mp.setVolume(0, 0);
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
-                
-                // 直接播放，视频一出来就会自然盖住父容器的背景图，不需要任何隐藏图片的操作
+                // 直接播放，视频自然盖住底层背景图，绝不闪退
                 mSplashVideo.start();
             }
         });
@@ -378,15 +364,8 @@ public class HomeActivity extends BaseActivity {
             mSplashVideo.stopPlayback();
         }
 
-        mSplashContainer.animate()
-                .alpha(0f)
-                .setDuration(500)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSplashContainer.setVisibility(View.GONE);
-                    }
-                }).start();
+        // 【核心修复】删除了导致老盒子闪退的透明度动画，直接瞬间隐藏
+        mSplashContainer.setVisibility(View.GONE);
     }
 
     private boolean skipNextUpdate = false;
