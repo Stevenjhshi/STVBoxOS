@@ -105,12 +105,10 @@ public class HomeActivity extends BaseActivity {
     private long mExitTime = 0;
     private boolean eventBusRegistered = false;
 
-    // ================= 【原生启动页控制】 =================
     private View mSplashContainer;
     private View mMainContentLayout;
     private android.widget.VideoView mSplashVideo;
     private boolean isOverlayHidden = false;
-    // =======================================================
 
     private final Runnable mRunnable = new Runnable() {
         @SuppressLint("SetTextI18n")
@@ -339,17 +337,25 @@ public class HomeActivity extends BaseActivity {
                 mp.setLooping(false); 
                 mp.setVolume(0, 0);
                 mp.setVideoScalingMode(android.media.MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
-                // 直接播放，视频自然盖住底层背景图，绝不闪退
+                
                 mSplashVideo.start();
+                
+                // 【核心提速】视频准备就绪，立刻在 50 毫秒后撤掉启动页！实现极速画面接管
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideSplashOverlay();
+                    }
+                }, 50); 
             }
         });
 
-        // 【防闪退核心】如果你的视频文件编码老盒子不支持，这里会捕获异常，直接进主页，绝不闪退！
+        // 防闪退拦截器
         mSplashVideo.setOnErrorListener(new android.media.MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(android.media.MediaPlayer mp, int what, int extra) {
                 hideSplashOverlay();
-                return true; // 返回 true 表示已处理，系统不再抛出崩溃
+                return true;
             }
         });
 
@@ -377,7 +383,7 @@ public class HomeActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-        // 【核心修复】删除了导致老盒子闪退的透明度动画，直接瞬间隐藏
+        // 禁用动画，直接隐藏，绝不闪退
         mSplashContainer.setVisibility(View.GONE);
     }
 
