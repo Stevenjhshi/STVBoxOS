@@ -344,6 +344,15 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        // 【防闪退核心】如果你的视频文件编码老盒子不支持，这里会捕获异常，直接进主页，绝不闪退！
+        mSplashVideo.setOnErrorListener(new android.media.MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(android.media.MediaPlayer mp, int what, int extra) {
+                hideSplashOverlay();
+                return true; // 返回 true 表示已处理，系统不再抛出崩溃
+            }
+        });
+
         mSplashVideo.setOnCompletionListener(new android.media.MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(android.media.MediaPlayer mp) {
@@ -360,8 +369,12 @@ public class HomeActivity extends BaseActivity {
             mMainContentLayout.setVisibility(View.VISIBLE);
         }
 
-        if (mSplashVideo != null) {
-            mSplashVideo.stopPlayback();
+        try {
+            if (mSplashVideo != null) {
+                mSplashVideo.stopPlayback();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // 【核心修复】删除了导致老盒子闪退的透明度动画，直接瞬间隐藏
