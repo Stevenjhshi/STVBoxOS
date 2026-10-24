@@ -186,19 +186,6 @@ public class HomeActivity extends BaseActivity {
         }
         
         initData();
-
-        // 👇👇👇 注意：在 initData(); 的下一行，只保留这堆背景色代码 👇👇👇
-        int savedColorIdx = com.orhanobut.hawk.Hawk.get("wallpaper", 0);
-        int savedColor = 0xFF000000; // 默认黑
-        if (savedColorIdx == 1) savedColor = 0xFF1A1A1A;
-        else if (savedColorIdx == 2) savedColor = 0xFF0A1930;
-        else if (savedColorIdx == 3) savedColor = 0xFF0B1C14;
-        else if (savedColorIdx == 4) savedColor = 0xFF190F24;
-        
-        android.view.View rootView = findViewById(android.R.id.content);
-        if (rootView != null) {
-            rootView.setBackgroundColor(savedColor);
-        }
     }
 
     private void initView() {
