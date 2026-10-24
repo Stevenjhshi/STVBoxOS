@@ -177,26 +177,17 @@ public class HomeActivity extends BaseActivity {
         initView();
         initViewModel();
         useCacheConfig = false;
+        
+        // 这段代码保留一份就行，不要重复粘贴！
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
             Bundle bundle = intent.getExtras();
             useCacheConfig = bundle.getBoolean("useCache", false);
         }
-        initData();
-        // ... (上面是你截图里的代码)
-        initView();
-        initViewModel();
-        useCacheConfig = false;
-        Intent intent = getIntent();
-        if (intent != null && intent.getExtras() != null) {
-            Bundle bundle = intent.getExtras();
-            useCacheConfig = bundle.getBoolean("useCache", false);
-        }
+        
         initData();
 
-        // 👇👇👇 把代码粘贴在这里（第186行的大括号上面） 👇👇👇
-        
-        // 开机自动读取上次设置的背景色
+        // 👇👇👇 注意：在 initData(); 的下一行，只保留这堆背景色代码 👇👇👇
         int savedColorIdx = com.orhanobut.hawk.Hawk.get("wallpaper", 0);
         int savedColor = 0xFF000000; // 默认黑
         if (savedColorIdx == 1) savedColor = 0xFF1A1A1A;
@@ -208,8 +199,6 @@ public class HomeActivity extends BaseActivity {
         if (rootView != null) {
             rootView.setBackgroundColor(savedColor);
         }
-        
-        // 👆👆👆 粘贴到这里结束 👆👆👆
     }
 
     private void initView() {
