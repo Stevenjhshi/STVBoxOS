@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,11 +67,10 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         } catch (Throwable th) {
             th.printStackTrace();
         }
+        
         setContentView(getLayoutResID());
-        
-        
         mContext = this;
-        // ...下面保留原有代码...
+        
         initSystemUiListener();
         CutoutUtil.adaptCutoutAboveAndroidP(mContext, true);//设置刘海
         AppManager.getInstance().addActivity(this);
@@ -277,7 +275,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     protected static BitmapDrawable globalWp = null;
 
     public void changeWallpaper(boolean force) {
-        // 1. 优先检查是否启用了纯色壁纸（0-4 代表颜色，-1 代表未启用纯色）
+        // 1. 优先检查是否启用了纯色壁纸
         int pureColorIdx = com.orhanobut.hawk.Hawk.get("wallpaper", -1);
         if (pureColorIdx >= 0) {
             int color = 0xFF121212; // 默认深邃黑
@@ -287,10 +285,10 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             else if (pureColorIdx == 4) color = 0xFF190F24; // 暗夜紫
             
             getWindow().setBackgroundDrawable(new ColorDrawable(color));
-            return; // 拦截成功！不再往下执行图片壁纸逻辑
+            return; 
         }
 
-        // 2. 下面保留原作者的自定义图片壁纸逻辑
+        // 2. 原有图片壁纸逻辑
         if (!force && globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
             return;
@@ -325,7 +323,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
             globalWp = null;
         }
         
-        // 3. 如果没有任何图片壁纸，使用系统默认的深色底
+        // 3. 如果没有任何图片，使用系统默认深色
         if (globalWp != null) {
             getWindow().setBackgroundDrawable(globalWp);
         } else {
