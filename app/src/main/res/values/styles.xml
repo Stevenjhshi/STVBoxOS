@@ -14,12 +14,13 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowNoTitle">true</item>
         <item name="android:keepScreenOn">true</item>
-        <!-- 【核心修改】全局深邃黑 -->
+        <!-- 全局深邃黑 -->
         <item name="android:windowBackground">#121212</item>
     </style>
 
-    <!-- 【核心修改】冷启动深邃黑 -->
+    <!-- 冷启动深邃黑（HomeActivity 的专属主题） -->
     <style name="SplashTheme" parent="AppTheme.NoActionBar">
+        <!-- 【核心】App启动瞬间显示静态图，做到 0 秒黑屏 -->
         <item name="android:windowBackground">@drawable/splash_bg</item>
     </style>
 
