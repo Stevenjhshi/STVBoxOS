@@ -70,13 +70,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         }
         setContentView(getLayoutResID());
         
-        // ================== 新增：强制所有页面根布局透明 ==================
-        // 这样每个子页面（首页、搜索、历史等）就算XML写了死黑背景，也会被强制扒掉，透出底层壁纸
-        ViewGroup rootView = findViewById(android.R.id.content);
-        if (rootView != null && rootView.getChildAt(0) != null) {
-            rootView.getChildAt(0).setBackgroundColor(Color.TRANSPARENT);
-        }
-        // ==================================================================
         
         mContext = this;
         // ...下面保留原有代码...
