@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212">
+    android:background="@android:color/transparent"> <!-- 【修改点 1】根布局背景改为透明，让底层壁纸透出来 -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content_layout"
@@ -89,10 +89,9 @@
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#121212">
+        android:background="@android:color/transparent"> <!-- 【修改点 2】启动容器背景改为透明 -->
 
-        <!-- 【关键修改 1】在这里垫上一张静态图，它会在视频未渲染前显示 -->
-        <!-- 注意：请确保你的 drawable 里有一张叫 splash_bg 的图片 -->
+        <!-- 垫底静态图 -->
         <ImageView
             android:id="@+id/iv_splash_cover"
             android:layout_width="match_parent"
@@ -100,11 +99,12 @@
             android:scaleType="centerCrop"
             android:src="@drawable/splash_bg" />
 
-        <!-- 视频控件。它只要一渲染出画面，就会自动盖住上面的 ImageView -->
+        <!-- 视频控件，加透明背景防止初始化黑屏 -->
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" /> <!-- 【修改点 3】视频控件背景透明 -->
 
         <!-- 进度条 -->
         <ProgressBar
