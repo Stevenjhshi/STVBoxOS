@@ -14,13 +14,12 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowNoTitle">true</item>
         <item name="android:keepScreenOn">true</item>
-        <!-- 全局深邃黑 -->
+        <!-- 基础背景色 -->
         <item name="android:windowBackground">#121212</item>
     </style>
 
-    <!-- 冷启动深邃黑（HomeActivity 的专属主题） -->
+    <!-- 【核心】启动页主题，系统一拉取App立刻显示图片，0秒黑屏 -->
     <style name="SplashTheme" parent="AppTheme.NoActionBar">
-        <!-- 【核心】App启动瞬间显示静态图，做到 0 秒黑屏 -->
         <item name="android:windowBackground">@drawable/splash_bg</item>
     </style>
 
@@ -35,6 +34,7 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+    
     <style name="CustomDialogStyleDim" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
