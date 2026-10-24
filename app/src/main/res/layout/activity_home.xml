@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="#121212">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_content_layout"
@@ -77,17 +77,17 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- 启动页盖在最顶层（原版黑底） -->
     <FrameLayout
         android:id="@+id/splash_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"> 
+        android:background="#121212">
 
         <VideoView
             android:id="@+id/splash_video_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent" />
+            android:layout_height="match_parent" />
 
         <ProgressBar
             android:id="@+id/splash_progress"
